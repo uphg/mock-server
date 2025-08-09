@@ -2,6 +2,10 @@ export const mockConfigSchema = {
   type: 'object',
   properties: {
     port: { type: 'number', default: 3000 },
+    baseUrl: { type: 'string', default: '' },
+    delay: { type: 'number', default: 0, minimum: 0 },
+    cors: { type: 'boolean', default: true },
+    mockDir: { type: 'string', default: './data' },
     routes: {
       type: 'array',
       items: {

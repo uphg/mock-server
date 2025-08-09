@@ -27,7 +27,7 @@ class MockServer {
       const config = await this.configLoader.loadConfig()
       
       // 设置Express中间件
-      this.setupMiddleware()
+      this.setupMiddleware(config)
       
       // 初始化路由生成器
       this.routeGenerator = new RouteGenerator(this.app)
@@ -39,8 +39,12 @@ class MockServer {
       const port = config.port || 3000
       this.server = this.app.listen(port, () => {
         console.log(`🚀 Mock服务器启动成功！`)
-        console.log(`📍 端口: ${port}`)
-        console.log(`📁 配置文件: ${fullConfigPath}`)
+        console.log(`- 端口: ${port}`)
+        console.log(`- 配置文件: ${fullConfigPath}`)
+        console.log(`- 基础路径: ${config.baseUrl || '/'}`)
+        console.log(`- 全局延迟: ${config.delay || 0}ms`)
+        console.log(`- CORS: ${config.cors !== false ? '启用' : '禁用'}`)
+        console.log(`- Mock目录: ${config.mockDir || './data'}`)
         console.log('')
         this.routeGenerator.printRoutes()
       })
@@ -59,13 +63,22 @@ class MockServer {
     }
   }
 
-  setupMiddleware() {
-    // CORS支持
-    this.app.use(cors())
+  setupMiddleware(config) {
+    // CORS支持 - 根据配置启用或禁用
+    if (config.cors !== false) {
+      this.app.use(cors())
+    }
     
     // JSON解析
     this.app.use(express.json({ limit: '10mb' }))
     this.app.use(express.urlencoded({ extended: true }))
+    
+    // 全局延迟中间件
+    if (config.delay > 0) {
+      this.app.use((req, res, next) => {
+        setTimeout(next, config.delay)
+      })
+    }
     
     // 日志中间件
     this.app.use((req, res, next) => {
@@ -80,7 +93,8 @@ class MockServer {
     })
     
     // API文档
-    this.app.get('/api/docs', (_req, res) => {
+    const docsPath = config.baseUrl ? `${config.baseUrl}/docs` : '/api/docs'
+    this.app.get(docsPath, (_req, res) => {
       res.json(this.generateApiDocs())
     })
   }
@@ -102,6 +116,7 @@ class MockServer {
 
   generateApiDocs() {
     const routes = this.routeGenerator.getActiveRoutes()
+    const port = this.server?.address()?.port
     return {
       title: 'Mock API 文档',
       timestamp: new Date().toISOString(),
@@ -110,7 +125,7 @@ class MockServer {
         return {
           method: method.toUpperCase(),
           path,
-          url: `http://localhost:${this.server?.address()?.port}${path}`
+          url: `http://localhost:${port}${path}`
         }
       })
     }

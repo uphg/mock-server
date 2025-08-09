@@ -1,11 +1,15 @@
 {
   "port": 3001,
+  "baseUrl": "/api",
+  "delay": 0,
+  "cors": true,
+  "mockDir": "./data",
   "routes": [
     {
       "path": "/api/users",
       "method": "GET",
       "description": "获取用户列表",
-      "responseFile": "./data/users.json",
+      "responseFile": "users.json",
       "headers": {
         "X-Total-Count": "100"
       }
@@ -37,14 +41,14 @@
       "path": "/api/products",
       "method": "GET",
       "description": "获取产品列表",
-      "responseFile": "./data/products.json",
+      "responseFile": "products.json",
       "delay": 500
     },
     {
       "path": "/api/products/:id",
       "method": "GET",
       "description": "获取产品详情",
-      "responseFile": "./data/product-detail.json"
+      "responseFile": "product-detail.json"
     },
     {
       "path": "/api/search",

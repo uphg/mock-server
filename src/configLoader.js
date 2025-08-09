@@ -60,9 +60,13 @@ export class ConfigLoader {
   }
 
   async processResponseFiles(config) {
+    const mockDir = config.mockDir || './data'
+    
     for (const route of config.routes) {
       if (route.responseFile) {
-        const filePath = path.resolve(this.baseDir, route.responseFile)
+        // 构建完整的文件路径
+        const filePath = path.resolve(this.baseDir, mockDir, route.responseFile)
+        
         try {
           const fileContent = await fs.readFile(filePath, 'utf-8')
           route.response = JSON.parse(fileContent)
@@ -77,7 +81,21 @@ export class ConfigLoader {
   async watchConfig(onChange) {
     const chokidar = await import('chokidar')
     
-    const watcher = chokidar.watch([this.configPath, path.join(this.baseDir, '**/*.json')], {
+    // 获取配置来确定 mockDir
+    let config
+    try {
+      const configContent = await fs.readFile(this.configPath, 'utf-8')
+      config = JSON.parse(configContent)
+    } catch {
+      config = { mockDir: './data' }
+    }
+    
+    const mockDir = config.mockDir || './data'
+    
+    const watcher = chokidar.watch([
+      this.configPath, 
+      path.join(this.baseDir, mockDir, '**/*.json')
+    ], {
       ignored: /node_modules/,
       persistent: true
     })

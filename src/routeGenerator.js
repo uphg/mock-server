@@ -10,32 +10,40 @@ export class RouteGenerator {
     
     // 注册新路由
     for (const route of config.routes) {
-      this.registerRoute(route, config.port || 3000)
+      this.registerRoute(route, config)
     }
   }
 
-  registerRoute(route, port) {
+  registerRoute(route, config) {
     const method = (route.method || 'GET').toLowerCase()
-    const path = route.path
-    const key = `${method}:${path}`
+    
+    // 处理 baseUrl 前缀
+    let fullPath = route.path
+    if (config.baseUrl && !route.path.startsWith(config.baseUrl)) {
+      // 确保 baseUrl 不以 / 结尾，path 以 / 开头
+      const baseUrl = config.baseUrl.replace(/\/$/, '')
+      fullPath = `${baseUrl}${route.path}`
+    }
+    
+    const key = `${method}:${fullPath}`
 
     // 创建路由处理器
-    const handler = this.createHandler(route)
+    const handler = this.createHandler(route, config)
 
     // 注册路由
-    this.app[method](path, handler)
-    this.activeRoutes.set(key, { method, path, handler })
+    this.app[method](fullPath, handler)
+    this.activeRoutes.set(key, { method, path: fullPath, handler })
 
-    console.log(`✓ 注册路由: ${route.method || 'GET'} ${path}`)
+    console.log(`✓ 注册路由: ${route.method || 'GET'} ${fullPath}`)
     if (route.description) {
       console.log(`  描述: ${route.description}`)
     }
   }
 
-  createHandler(route) {
+  createHandler(route, _config) {
     return async (req, res) => {
       try {
-        // 添加延迟
+        // 路由级延迟（优先级高于全局延迟）
         if (route.delay > 0) {
           await new Promise(resolve => setTimeout(resolve, route.delay))
         }
@@ -96,13 +104,13 @@ export class RouteGenerator {
     if (typeof template !== 'string') return template
 
     return template
-      .replace(/\{\{query\.([^}]+)\}\}/g, (match, key) => {
+      .replace(/\{\{query\.([^}]+)\}\}/g, (_match, key) => {
         return req.query[key] || ''
       })
-      .replace(/\{\{params\.([^}]+)\}\}/g, (match, key) => {
+      .replace(/\{\{params\.([^}]+)\}\}/g, (_match, key) => {
         return req.params[key] || ''
       })
-      .replace(/\{\{body\.([^}]+)\}\}/g, (match, key) => {
+      .replace(/\{\{body\.([^}]+)\}\}/g, (_match, key) => {
         return req.body[key] || ''
       })
   }
@@ -120,7 +128,7 @@ export class RouteGenerator {
 
   printRoutes() {
     console.log('\n=== 激活的路由 ===')
-    this.activeRoutes.forEach((route, key) => {
+    this.activeRoutes.forEach((route, _key) => {
       console.log(`${route.method.toUpperCase()} ${route.path}`)
     })
     console.log('==================\n')
