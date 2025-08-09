@@ -1,0 +1,44 @@
+{
+  "id": 1,
+  "name": "iPhone 15 Pro",
+  "price": 7999,
+  "category": "手机",
+  "brand": "Apple",
+  "model": "iPhone 15 Pro",
+  "description": "iPhone 15 Pro 是Apple最新推出的旗舰手机，搭载A17 Pro芯片，性能强劲。",
+  "specifications": {
+    "display": "6.1英寸 Super Retina XDR显示屏",
+    "processor": "A17 Pro 芯片",
+    "storage": ["128GB", "256GB", "512GB", "1TB"],
+    "camera": {
+      "main": "4800万像素主摄",
+      "ultraWide": "1200万像素超广角",
+      "telephoto": "1200万像素长焦"
+    },
+    "battery": "3274mAh",
+    "os": "iOS 17"
+  },
+  "images": [
+    "https://example.com/images/iphone15-1.jpg",
+    "https://example.com/images/iphone15-2.jpg",
+    "https://example.com/images/iphone15-3.jpg"
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "user": "用户A",
+      "rating": 5,
+      "comment": "性能非常强，拍照效果很好",
+      "date": "2024-01-20"
+    },
+    {
+      "id": 2,
+      "user": "用户B",
+      "rating": 4,
+      "comment": "整体不错，但价格有点高",
+      "date": "2024-01-19"
+    }
+  ],
+  "stock": 50,
+  "availability": "in_stock"
+}
