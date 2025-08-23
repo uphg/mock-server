@@ -1,3 +1,5 @@
+import Handlebars from 'handlebars'
+
 export class RouteGenerator {
   constructor(app) {
     this.app = app
@@ -103,16 +105,27 @@ export class RouteGenerator {
   processTemplate(template, req) {
     if (typeof template !== 'string') return template
 
-    return template
-      .replace(/\{\{query\.([^}]+)\}\}/g, (_match, key) => {
-        return req.query[key] || ''
-      })
-      .replace(/\{\{params\.([^}]+)\}\}/g, (_match, key) => {
-        return req.params[key] || ''
-      })
-      .replace(/\{\{body\.([^}]+)\}\}/g, (_match, key) => {
-        return req.body[key] || ''
-      })
+    try {
+      // 编译 Handlebars 模板
+      const compiledTemplate = Handlebars.compile(template)
+      
+      // 准备模板数据
+      const templateData = {
+        query: req.query || {},
+        params: req.params || {},
+        body: req.body || {},
+        headers: req.headers || {},
+        method: req.method,
+        url: req.url,
+        path: req.path
+      }
+      
+      // 渲染模板
+      return compiledTemplate(templateData)
+    } catch (error) {
+      console.error('模板处理错误:', error)
+      return template // 如果模板处理失败，返回原始字符串
+    }
   }
 
   clearRoutes() {

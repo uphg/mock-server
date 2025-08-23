@@ -1,0 +1,68 @@
+{
+  "port": 3002,
+  "baseUrl": "/api",
+  "delay": 0,
+  "cors": true,
+  "mockDir": "./data",
+  "routes": [
+    {
+      "path": "/api/test-users",
+      "method": "GET",
+      "description": "测试用户列表",
+      "responseFile": "test-users.json",
+      "headers": {
+        "X-Total-Count": "2"
+      }
+    },
+    {
+      "path": "/api/test-users/:id",
+      "method": "GET",
+      "description": "测试用户详情",
+      "response": {
+        "id": "{{params.id}}",
+        "name": "测试用户{{params.id}}",
+        "email": "test{{params.id}}@example.com"
+      }
+    },
+    {
+      "path": "/api/test-users",
+      "method": "POST",
+      "description": "创建测试用户",
+      "statusCode": 201,
+      "response": {
+        "id": "{{body.id}}",
+        "name": "{{body.name}}",
+        "email": "{{body.email}}",
+        "created": true
+      }
+    },
+    {
+      "path": "/api/search",
+      "method": "GET",
+      "description": "搜索测试",
+      "response": {
+        "query": "{{query.q}}",
+        "results": []
+      }
+    },
+    {
+      "path": "/api/delayed",
+      "method": "GET",
+      "description": "延迟响应测试",
+      "delay": 100,
+      "response": {
+        "message": "延迟响应"
+      }
+    },
+    {
+      "path": "/api/error",
+      "method": "GET",
+      "description": "错误响应测试",
+      "statusCode": 400,
+      "response": {
+        "error": "Bad Request",
+        "message": "测试错误"
+      }
+    }
+  ]
+}
