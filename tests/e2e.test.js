@@ -130,7 +130,7 @@ describe('End-to-End Tests', () => {
       .send(newUser)
       .expect(201)
 
-    assert.strictEqual(createResponse.body.id, 999)
+    assert.strictEqual(createResponse.body.id, '999')
     assert.strictEqual(createResponse.body.created, true)
 
     // 4. 更新用户

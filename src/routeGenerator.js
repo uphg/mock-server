@@ -121,11 +121,45 @@ export class RouteGenerator {
       }
       
       // 渲染模板
-      return compiledTemplate(templateData)
+      const result = compiledTemplate(templateData)
+      
+      // 简化处理：只处理基本的类型转换，模板替换结果保持为字符串
+      return this.tryParseValue(result)
     } catch (error) {
       console.error('模板处理错误:', error)
       return template // 如果模板处理失败，返回原始字符串
     }
+  }
+
+  tryParseValue(value) {
+    if (typeof value !== 'string') return value
+    
+    // 如果字符串包含模板语法但没有被替换，直接返回
+    if (value.includes('{{') && value.includes('}}')) {
+      return value
+    }
+    
+    // 尝试解析为布尔值
+    if (value === 'true') return true
+    if (value === 'false') return false
+    
+    // 尝试解析为null或undefined
+    if (value === 'null') return null
+    if (value === 'undefined') return undefined
+    
+    // 尝试解析为JSON（数组或对象）
+    if ((value.startsWith('[') && value.endsWith(']')) || 
+        (value.startsWith('{') && value.endsWith('}'))) {
+      try {
+        return JSON.parse(value)
+      } catch {
+        // 如果JSON解析失败，返回原字符串
+      }
+    }
+    
+    // 对于模板替换的结果，保持为字符串
+    // 这样行为更加可预测和一致
+    return value
   }
 
   clearRoutes() {
