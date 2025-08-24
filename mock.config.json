@@ -4,9 +4,47 @@
   "delay": 0,
   "cors": true,
   "mockDir": "./data",
+  "routeDefaults": [
+    {
+      "name": "api-headers",
+      "description": "API通用响应头配置",
+      "config": {
+        "headers": {
+          "Content-Type": "application/json",
+          "X-API-Version": "v1",
+          "X-Response-Time": "{{responseTime}}ms"
+        }
+      },
+      "includes": ["/users*", "/products*"],
+      "excludes": ["/error"]
+    },
+    {
+      "name": "slow-response",
+      "description": "慢响应配置",
+      "config": {
+        "delay": 1000,
+        "headers": {
+          "X-Slow-Response": "true"
+        }
+      },
+      "includes": ["/products*"]
+    },
+    {
+      "name": "cors-headers",
+      "description": "CORS相关头部配置",
+      "config": {
+        "headers": {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        }
+      },
+      "excludes": ["/error"]
+    }
+  ],
   "routes": [
     {
-      "path": "/api/users",
+      "path": "/users",
       "method": "GET",
       "description": "获取用户列表",
       "responseFile": "users.json",
@@ -15,7 +53,7 @@
       }
     },
     {
-      "path": "/api/users/:id",
+      "path": "/users/:id",
       "method": "GET",
       "description": "根据ID获取用户详情",
       "response": {
@@ -26,7 +64,7 @@
       }
     },
     {
-      "path": "/api/users",
+      "path": "/users",
       "method": "POST",
       "description": "创建新用户",
       "statusCode": 201,
@@ -38,20 +76,20 @@
       }
     },
     {
-      "path": "/api/products",
+      "path": "/products",
       "method": "GET",
       "description": "获取产品列表",
       "responseFile": "products.json",
       "delay": 500
     },
     {
-      "path": "/api/products/:id",
+      "path": "/products/:id",
       "method": "GET",
       "description": "获取产品详情",
       "responseFile": "product-detail.json"
     },
     {
-      "path": "/api/search",
+      "path": "/search",
       "method": "GET",
       "description": "搜索接口",
       "response": {
@@ -67,7 +105,7 @@
       }
     },
     {
-      "path": "/api/error",
+      "path": "/error",
       "method": "GET",
       "description": "错误响应示例",
       "statusCode": 400,

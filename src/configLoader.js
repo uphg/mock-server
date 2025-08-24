@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
+import merge from 'lodash.merge'
 import { mockConfigSchema } from './schema.js'
 
 export class ConfigLoader {
@@ -18,6 +19,9 @@ export class ConfigLoader {
       
       // 处理响应文件导入
       await this.processResponseFiles(config)
+      
+      // 应用路由默认配置
+      this.applyRouteDefaults(config)
       
       return config
     } catch (error) {
@@ -110,5 +114,118 @@ export class ConfigLoader {
     })
 
     return watcher
+  }
+
+  /**
+   * 应用路由默认配置
+   * 优先级：路由显式配置 > 路由默认配置（defaults） > 全局默认配置
+   */
+  applyRouteDefaults(config) {
+    if (!config.routeDefaults || !Array.isArray(config.routeDefaults)) {
+      return
+    }
+
+    // 为每个路由应用匹配的默认配置
+    for (const route of config.routes) {
+      // 获取全局默认配置（除了 routes 和 routeDefaults）
+      const globalDefaults = this.extractGlobalDefaults(config)
+      
+      // 获取匹配的路由默认配置
+      const matchingDefaults = this.getMatchingRouteDefaults(route, config.routeDefaults)
+      
+      // 按优先级合并配置：全局默认 < 路由默认 < 路由显式配置
+      let mergedConfig = merge({}, globalDefaults)
+      
+      // 依次应用匹配的路由默认配置
+      for (const defaultConfig of matchingDefaults) {
+        mergedConfig = merge(mergedConfig, defaultConfig.config)
+      }
+      
+      // 最后应用路由的显式配置（优先级最高）
+      const routeExplicitConfig = { ...route }
+      delete routeExplicitConfig.path // path 不参与合并
+      delete routeExplicitConfig.method // method 不参与合并
+      delete routeExplicitConfig.description // description 不参与合并
+      
+      mergedConfig = merge(mergedConfig, routeExplicitConfig)
+      
+      // 将合并后的配置应用到路由（保留原有的 path, method, description）
+      Object.assign(route, mergedConfig)
+    }
+  }
+
+  /**
+   * 提取全局默认配置
+   */
+  extractGlobalDefaults(config) {
+    const globalDefaults = {}
+    
+    // 可以作为默认配置的全局字段
+    const globalDefaultFields = ['delay', 'headers', 'statusCode']
+    
+    for (const field of globalDefaultFields) {
+      if (config[field] !== undefined) {
+        globalDefaults[field] = config[field]
+      }
+    }
+    
+    return globalDefaults
+  }
+
+  /**
+   * 获取匹配指定路由的默认配置
+   */
+  getMatchingRouteDefaults(route, routeDefaults) {
+    const matchingDefaults = []
+    
+    for (const defaultConfig of routeDefaults) {
+      if (this.isRouteMatched(route, defaultConfig)) {
+        matchingDefaults.push(defaultConfig)
+      }
+    }
+    
+    return matchingDefaults
+  }
+
+  /**
+   * 检查路由是否匹配默认配置的条件
+   */
+  isRouteMatched(route, defaultConfig) {
+    const routePath = route.path
+    
+    // 检查 excludes 条件
+    if (defaultConfig.excludes && Array.isArray(defaultConfig.excludes)) {
+      for (const excludePattern of defaultConfig.excludes) {
+        if (this.matchPattern(routePath, excludePattern)) {
+          return false // 被排除
+        }
+      }
+    }
+    
+    // 检查 includes 条件
+    if (defaultConfig.includes && Array.isArray(defaultConfig.includes)) {
+      for (const includePattern of defaultConfig.includes) {
+        if (this.matchPattern(routePath, includePattern)) {
+          return true // 被包含
+        }
+      }
+      return false // 有 includes 但不匹配
+    }
+    
+    // 如果没有 includes 条件，且没有被 excludes 排除，则匹配
+    return true
+  }
+
+  /**
+   * 模式匹配（支持通配符 *）
+   */
+  matchPattern(path, pattern) {
+    // 简化的模式匹配：将 * 替换为正则表达式
+    const escapedPattern = pattern
+      .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // 转义特殊字符
+      .replace(/\*/g, '.*') // * 匹配任意字符
+    
+    const regex = new RegExp('^' + escapedPattern + '$')
+    return regex.test(path)
   }
 }

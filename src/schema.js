@@ -6,6 +6,33 @@ export const mockConfigSchema = {
     delay: { type: 'number', default: 0, minimum: 0 },
     cors: { type: 'boolean', default: true },
     mockDir: { type: 'string', default: './data' },
+    routeDefaults: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          description: { type: 'string' },
+          config: {
+            type: 'object',
+            properties: {
+              delay: { type: 'number', minimum: 0 },
+              headers: { type: 'object' },
+              statusCode: { type: 'number' }
+            }
+          },
+          includes: {
+            type: 'array',
+            items: { type: 'string' }
+          },
+          excludes: {
+            type: 'array',
+            items: { type: 'string' }
+          }
+        },
+        required: ['name', 'config']
+      }
+    },
     routes: {
       type: 'array',
       items: {
