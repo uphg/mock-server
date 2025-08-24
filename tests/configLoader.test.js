@@ -164,4 +164,50 @@ describe('ConfigLoader', () => {
       /加载响应文件失败/
     )
   })
+
+  describe('matchPattern 方法', () => {
+    test('应该支持简单通配符匹配（向后兼容）', () => {
+      assert.strictEqual(configLoader.matchPattern('/api/users', '/api/*'), true)
+      assert.strictEqual(configLoader.matchPattern('/api/users/123', '/api/*'), true)
+      assert.strictEqual(configLoader.matchPattern('/other/path', '/api/*'), false)
+      assert.strictEqual(configLoader.matchPattern('/any/path', '*'), true)
+    })
+
+    test('应该支持参数匹配', () => {
+      assert.strictEqual(configLoader.matchPattern('/user/123', '/user/:id'), true)
+      assert.strictEqual(configLoader.matchPattern('/user/abc', '/user/:id'), true)
+      assert.strictEqual(configLoader.matchPattern('/user', '/user/:id'), false)
+      assert.strictEqual(configLoader.matchPattern('/api/v1/users/123', '/api/:version/users/:id'), true)
+    })
+
+    test('应该支持 path-to-regexp 通配符匹配', () => {
+      assert.strictEqual(configLoader.matchPattern('/api/v1/users', '/api/*path'), true)
+      assert.strictEqual(configLoader.matchPattern('/api/v1/users/123', '/api/*path'), true)
+      assert.strictEqual(configLoader.matchPattern('/files/docs/readme.txt', '/files/*path'), true)
+    })
+
+    test('应该支持可选参数', () => {
+      assert.strictEqual(configLoader.matchPattern('/users/delete', '/users{/:id}/delete'), true)
+      assert.strictEqual(configLoader.matchPattern('/users/123/delete', '/users{/:id}/delete'), true)
+      assert.strictEqual(configLoader.matchPattern('/api', '/api{/:version}'), true)
+      assert.strictEqual(configLoader.matchPattern('/api/v1', '/api{/:version}'), true)
+    })
+
+    test('应该支持精确匹配', () => {
+      assert.strictEqual(configLoader.matchPattern('/api/users', '/api/users'), true)
+      assert.strictEqual(configLoader.matchPattern('/api/users/123', '/api/users'), false)
+    })
+
+    test('应该处理无效模式并回退到精确匹配', () => {
+      // 测试无效的 path-to-regexp 模式
+      assert.strictEqual(configLoader.matchPattern('/test[invalid', '/test[invalid'), true)
+      assert.strictEqual(configLoader.matchPattern('/test', '/test[invalid'), false)
+    })
+
+    test('应该正确转换简单通配符', () => {
+      assert.strictEqual(configLoader.convertSimpleWildcard('*'), '/*path')
+      assert.strictEqual(configLoader.convertSimpleWildcard('/api/*'), '/api/*path')
+      assert.strictEqual(configLoader.convertSimpleWildcard('/files/*/docs'), '/files/*segment/docs')
+    })
+  })
 })

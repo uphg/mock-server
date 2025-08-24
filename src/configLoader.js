@@ -2,6 +2,8 @@ import fs from 'fs/promises'
 import path from 'path'
 import merge from 'lodash.merge'
 import { mockConfigSchema } from './schema.js'
+import omit from 'lodash.omit'
+import { match } from 'path-to-regexp'
 
 export class ConfigLoader {
   constructor(configPath) {
@@ -142,10 +144,7 @@ export class ConfigLoader {
       }
       
       // 最后应用路由的显式配置（优先级最高）
-      const routeExplicitConfig = { ...route }
-      delete routeExplicitConfig.path // path 不参与合并
-      delete routeExplicitConfig.method // method 不参与合并
-      delete routeExplicitConfig.description // description 不参与合并
+      const routeExplicitConfig = omit(route, 'name', 'path', 'method', 'description')
       
       mergedConfig = merge(mergedConfig, routeExplicitConfig)
       
@@ -217,15 +216,73 @@ export class ConfigLoader {
   }
 
   /**
-   * 模式匹配（支持通配符 *）
+   * 模式匹配（使用 path-to-regexp 库）
+   * 
+   * 支持以下模式：
+   * 
+   * 1. 参数匹配：
+   *    - /user/:id 匹配 /user/123, /user/abc 等
+   *    - /api/:version/users/:id 匹配 /api/v1/users/123 等
+   * 
+   * 2. 通配符匹配：
+   *    - /api/*path 匹配 /api/v1/users, /api/v2/posts/123 等
+   *    - * 匹配任意路径
+   *    - /files/*path 匹配 /files/docs/readme.txt 等
+   * 
+   * 3. 可选参数：
+   *    - /users{/:id}/delete 匹配 /users/delete 和 /users/123/delete
+   *    - /api{/:version} 匹配 /api 和 /api/v1
+   * 
+   * 4. 精确匹配：
+   *    - /api/users 只匹配 /api/users
+   * 
+   * 5. 向后兼容的简单通配符：
+   *    - /api/* 自动转换为 /api/*path
+   *    - * 自动转换为 /*path
+   * 
+   * @param {string} path - 要匹配的路径
+   * @param {string} pattern - 匹配模式
+   * @returns {boolean} 是否匹配
    */
   matchPattern(path, pattern) {
-    // 简化的模式匹配：将 * 替换为正则表达式
-    const escapedPattern = pattern
-      .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // 转义特殊字符
-      .replace(/\*/g, '.*') // * 匹配任意字符
+    try {
+      // 处理简单的通配符模式（向后兼容）
+      if (pattern.includes('*') && !pattern.includes(':') && !pattern.includes('{')) {
+        // 如果是简单的通配符模式，转换为 path-to-regexp 格式
+        const convertedPattern = this.convertSimpleWildcard(pattern)
+        const matcher = match(convertedPattern, { decode: decodeURIComponent })
+        const result = matcher(path)
+        return result !== false
+      }
+      
+      // 使用 path-to-regexp 进行匹配
+      const matcher = match(pattern, { decode: decodeURIComponent })
+      const result = matcher(path)
+      return result !== false
+    } catch (error) {
+      // 如果 path-to-regexp 解析失败，回退到简单的字符串匹配
+      console.warn(`Pattern parsing failed for "${pattern}": ${error.message}. Falling back to exact match.`)
+      return path === pattern
+    }
+  }
+
+  /**
+   * 将简单的通配符模式转换为 path-to-regexp 格式
+   * 例如：/api/* -> /api/*path
+   *      * -> /*path
+   */
+  convertSimpleWildcard(pattern) {
+    // 如果模式只是 *，转换为 /*path
+    if (pattern === '*') {
+      return '/*path'
+    }
     
-    const regex = new RegExp('^' + escapedPattern + '$')
-    return regex.test(path)
+    // 将末尾的 * 替换为 *path
+    if (pattern.endsWith('*')) {
+      return pattern.replace(/\*$/, '*path')
+    }
+    
+    // 将中间的 * 替换为 *segment
+    return pattern.replace(/\*/g, '*segment')
   }
 }
