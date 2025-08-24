@@ -4,6 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { ConfigLoader } from './configLoader.js'
 import { RouteGenerator } from './routeGenerator.js'
+import { DocsGenerator } from './docsGenerator.js'
 
 const __filename = fileURLToPath(import.meta.url)
 path.dirname(__filename)
@@ -34,6 +35,9 @@ class MockServer {
       
       // 生成路由
       this.routeGenerator.generateRoutes(config)
+      
+      // 生成API文档
+      await this.generateApiDocs(config)
       
       // 启动服务器
       const port = config.port || 3000
@@ -101,9 +105,10 @@ class MockServer {
 
   async setupHotReload() {
     try {
-      this.watcher = await this.configLoader.watchConfig((newConfig) => {
+      this.watcher = await this.configLoader.watchConfig(async (newConfig) => {
         console.log('\n🔄 检测到配置变更，重新加载...')
         this.routeGenerator.generateRoutes(newConfig)
+        await this.generateApiDocs(newConfig)
         console.log('✅ 配置热更新完成')
         this.routeGenerator.printRoutes()
       })
@@ -128,6 +133,16 @@ class MockServer {
           url: `http://localhost:${port}${path}`
         }
       })
+    }
+  }
+
+  async generateApiDocs(config) {
+    try {
+      const docsGenerator = new DocsGenerator(config)
+      await docsGenerator.generateAllDocs()
+      console.log('📚 API文档生成完成')
+    } catch (error) {
+      console.warn('⚠️  API文档生成失败:', error.message)
     }
   }
 
