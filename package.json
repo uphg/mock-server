@@ -8,7 +8,9 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "test": "node --test tests/**/*.test.js",
-    "test:watch": "node --test --watch tests/**/*.test.js"
+    "test:watch": "node --test --watch tests/**/*.test.js",
+    "docs:generate": "node src/generateDocs.js",
+    "docs:generate:watch": "node --watch src/generateDocs.js"
   },
   "keywords": [
     "mock",
@@ -24,7 +26,11 @@
     "handlebars": "^4.7.8",
     "lodash.merge": "^4.6.2",
     "lodash.omit": "^4.5.0",
-    "path-to-regexp": "^8.2.0"
+    "mdast-builder": "^1.1.1",
+    "mdast-util-to-markdown": "^2.1.2",
+    "path-to-regexp": "^8.2.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "chokidar": "^4.0.3",
