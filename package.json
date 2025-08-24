@@ -29,9 +29,7 @@
     "mdast-builder": "^1.1.1",
     "mdast-util-gfm-table": "^2.0.0",
     "mdast-util-to-markdown": "^2.1.2",
-    "path-to-regexp": "^8.2.0",
-    "remark-stringify": "^11.0.0",
-    "unified": "^11.0.5"
+    "path-to-regexp": "^8.2.0"
   },
   "devDependencies": {
     "chokidar": "^4.0.3",

@@ -1,29 +1,30 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { unified } from 'unified'
-import remarkStringify from 'remark-stringify'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import { gfmTableToMarkdown } from 'mdast-util-gfm-table'
-import {
-  root,
-  heading,
-  paragraph,
-  text,
-  list,
-  listItem,
-  table,
-  tableRow,
-  tableCell,
-  code,
-  blockquote,
-  strong,
-  emphasis
-} from 'mdast-builder'
+import { parse as parsePathToRegexp } from 'path-to-regexp'
+import Handlebars from 'handlebars'
+import { root, heading, paragraph, text, list, listItem, tableRow, tableCell, code } from 'mdast-builder'
 
 export class DocsGenerator {
   constructor(config) {
-    this.config = config
-    this.docsDir = './docs'
+    this.config = this.validateConfig(config)
+    this.docsDir = config.docsDir ?? './docs'
+  }
+
+  validateConfig(config) {
+    if (!config.routes || !Array.isArray(config.routes)) {
+      throw new Error('配置必须包含 routes 数组')
+    }
+    
+    return {
+      ...config,
+      routes: config.routes.map(route => ({
+        method: 'GET',
+        ...route,
+        path: route.path || '/'
+      }))
+    }
   }
 
   /**
@@ -43,9 +44,11 @@ export class DocsGenerator {
       // 确保文档目录存在
       await this.ensureDocsDirectory()
       
-      // 为每个路由生成单独的文档文件
-      for (const route of this.config.routes) {
-        await this.generateRouteDoc(route)
+      // 使用 Promise.all 并发生成文档，但限制并发数
+      const batchSize = 5
+      for (let i = 0; i < this.config.routes.length; i += batchSize) {
+        const batch = this.config.routes.slice(i, i + batchSize)
+        await Promise.all(batch.map(route => this.generateRouteDoc(route)))
       }
       
       // 生成总览文档
@@ -78,12 +81,31 @@ export class DocsGenerator {
   async generateRouteDoc(route) {
     const fileName = this.generateFileName(route)
     const filePath = path.join(this.docsDir, fileName)
-    
-    // 构建 MDAST 树
+
+    // 检查文件是否已存在且内容相同
+    const newContent = this.generateMarkdownContent(route)
+
+    try {
+      const existingContent = await fs.readFile(filePath, 'utf-8')
+      if (existingContent === newContent) {
+        console.log(`📄 跳过未变更文档: ${fileName}`)
+        return
+      }
+    } catch (_error) {
+      // 文件不存在，继续生成
+    }
+
+    await fs.writeFile(filePath, newContent, 'utf-8')
+    console.log(`📄 生成文档: ${fileName}`)
+  }
+
+  generateMarkdownContent(route) {
     const mdastTree = this.buildRouteDocTree(route)
-    
-    // 转换为 Markdown
-    const markdown = toMarkdown(mdastTree, {
+    return toMarkdown(mdastTree, this.markdownOptions)
+  }
+
+  get markdownOptions() {
+    return {
       bullet: '-',
       fence: '`',
       fences: true,
@@ -91,11 +113,7 @@ export class DocsGenerator {
       listItemIndent: 'one',
       tightDefinitions: true,
       extensions: [gfmTableToMarkdown()]
-    })
-    
-    // 写入文件
-    await fs.writeFile(filePath, markdown, 'utf-8')
-    console.log(`📄 生成文档: ${fileName}`)
+    }
   }
 
   /**
@@ -250,12 +268,89 @@ export class DocsGenerator {
 
   /**
    * 从路由配置中提取参数信息
+   * 使用 path-to-regexp 进行更准确的路径解析
    */
   extractParams(route) {
     const params = []
     
-    // 提取路径参数
-    const pathParamMatches = route.path.match(/:([^/]+)/g)
+    // 使用 path-to-regexp 提取路径参数
+    try {
+      const parsed = parsePathToRegexp(route.path)
+      const tokens = parsed.tokens || []
+      
+      this.extractParamsFromTokens(tokens, params)
+    } catch (error) {
+      // 如果 path-to-regexp 解析失败，回退到原来的正则表达式方法
+      console.warn(`路径解析失败，使用备用方法: ${route.path}`, error.message)
+      this.extractParamsWithRegex(route.path, params)
+    }
+
+    // 从响应模板中推断参数
+    if (route.response) {
+      this.extractParamsFromTemplate(route.response, params)
+    }
+
+    return params
+  }
+
+  /**
+   * 从模板中提取参数
+   * 使用 Handlebars AST 进行更准确的模板解析
+   */
+  extractParamsFromTemplate(obj, params, prefix = '') {
+    if (typeof obj === 'string') {
+      try {
+        // 使用 Handlebars 解析模板
+        const ast = Handlebars.parse(obj)
+        this.extractParamsFromAST(ast, params)
+      } catch (error) {
+        // 如果 Handlebars 解析失败，回退到原来的正则表达式方法
+        console.warn(`模板解析失败，使用备用方法: ${obj.substring(0, 50)}...`, error.message)
+        this.extractParamsFromTemplateRegex(obj, params)
+      }
+    } else if (Array.isArray(obj)) {
+      obj.forEach((item, index) => {
+        this.extractParamsFromTemplate(item, params, `${prefix}[${index}]`)
+      })
+    } else if (typeof obj === 'object' && obj !== null) {
+      Object.entries(obj).forEach(([key, value]) => {
+        const newPrefix = prefix ? `${prefix}.${key}` : key
+        this.extractParamsFromTemplate(value, params, newPrefix)
+      })
+    }
+  }
+
+  /**
+   * 从 path-to-regexp tokens 中提取参数
+   */
+  extractParamsFromTokens(tokens, params) {
+    tokens.forEach(token => {
+      if (token.type === 'param') {
+        params.push({
+          name: token.name,
+          type: 'path',
+          required: !token.optional,
+          description: `路径参数 ${token.name}${token.optional ? ' (可选)' : ''}`
+        })
+      } else if (token.type === 'wildcard') {
+        params.push({
+          name: token.name,
+          type: 'path',
+          required: true,
+          description: `通配符参数 ${token.name}`
+        })
+      } else if (token.type === 'group' && token.tokens) {
+        // 递归处理分组中的 tokens
+        this.extractParamsFromTokens(token.tokens, params)
+      }
+    })
+  }
+
+  /**
+   * 使用正则表达式提取路径参数（备用方法）
+   */
+  extractParamsWithRegex(path, params) {
+    const pathParamMatches = path.match(/:([^/]+)/g)
     if (pathParamMatches) {
       pathParamMatches.forEach(match => {
         const paramName = match.substring(1)
@@ -267,47 +362,114 @@ export class DocsGenerator {
         })
       })
     }
-
-    // 从响应模板中推断参数
-    if (route.response) {
-      this.extractParamsFromTemplate(route.response, params)
-    }
-
-
-
-    return params
   }
 
   /**
-   * 从模板中提取参数
+   * 从 Handlebars AST 中提取参数
    */
-  extractParamsFromTemplate(obj, params, prefix = '') {
-    if (typeof obj === 'string') {
-      // 提取 Handlebars 模板变量
-      const matches = obj.match(/\{\{([^}]+)\}\}/g)
-      if (matches) {
-        matches.forEach(match => {
-          const variable = match.replace(/[{}]/g, '').trim()
-          const [type, name] = variable.split('.')
-          
+  extractParamsFromAST(ast, params) {
+    if (ast.body) {
+      ast.body.forEach(node => {
+        this.visitASTNode(node, params)
+      })
+    }
+  }
+
+  /**
+   * 递归访问 AST 节点提取参数
+   */
+  visitASTNode(node, params) {
+    if (!node) return
+
+    // 处理 Mustache 表达式 {{variable}}
+    if (node.type === 'MustacheStatement' || node.type === 'SubExpression') {
+      if (node.path && node.path.type === 'PathExpression') {
+        const pathParts = node.path.parts
+        if (pathParts.length >= 2) {
+          const [type, name] = pathParts
           if (type && name && !params.some(p => p.name === name && p.type === type)) {
             params.push({
               name,
               type,
               required: false,
-              description: `${type === 'query' ? '查询' : type === 'body' ? '请求体' : ''}参数 ${name}`
+              description: `${this.getParamTypeDescription(type)}参数 ${name}`
             })
           }
-        })
+        } else if (pathParts.length === 1) {
+          // 处理简单变量引用，如 {{name}}
+          const name = pathParts[0]
+          if (name && !params.some(p => p.name === name && p.type === 'template')) {
+            params.push({
+              name,
+              type: 'template',
+              required: false,
+              description: `模板变量 ${name}`
+            })
+          }
+        }
       }
-    } else if (Array.isArray(obj)) {
-      obj.forEach((item, index) => {
-        this.extractParamsFromTemplate(item, params, `${prefix}[${index}]`)
-      })
-    } else if (typeof obj === 'object' && obj !== null) {
-      Object.entries(obj).forEach(([key, value]) => {
-        const newPrefix = prefix ? `${prefix}.${key}` : key
-        this.extractParamsFromTemplate(value, params, newPrefix)
+    }
+
+    // 递归处理子节点
+    if (node.params) {
+      node.params.forEach(param => this.visitASTNode(param, params))
+    }
+    if (node.hash && node.hash.pairs) {
+      node.hash.pairs.forEach(pair => this.visitASTNode(pair.value, params))
+    }
+    if (node.program && node.program.body) {
+      node.program.body.forEach(child => this.visitASTNode(child, params))
+    }
+    if (node.inverse && node.inverse.body) {
+      node.inverse.body.forEach(child => this.visitASTNode(child, params))
+    }
+  }
+
+  /**
+   * 获取参数类型描述
+   */
+  getParamTypeDescription(type) {
+    switch (type) {
+      case 'query': return '查询'
+      case 'body': return '请求体'
+      case 'params': return '路径'
+      case 'headers': return '请求头'
+      default: return type
+    }
+  }
+
+  /**
+   * 使用正则表达式从模板中提取参数（备用方法）
+   */
+  extractParamsFromTemplateRegex(obj, params) {
+    // 提取 Handlebars 模板变量
+    const matches = obj.match(/\{\{([^}]+)\}\}/g)
+    if (matches) {
+      matches.forEach(match => {
+        const variable = match.replace(/[{}]/g, '').trim()
+        const parts = variable.split('.')
+        
+        if (parts.length >= 2) {
+          const [type, name] = parts
+          if (type && name && !params.some(p => p.name === name && p.type === type)) {
+            params.push({
+              name,
+              type,
+              required: false,
+              description: `${this.getParamTypeDescription(type)}参数 ${name}`
+            })
+          }
+        } else if (parts.length === 1) {
+          const name = parts[0]
+          if (name && !params.some(p => p.name === name && p.type === 'template')) {
+            params.push({
+              name,
+              type: 'template',
+              required: false,
+              description: `模板变量 ${name}`
+            })
+          }
+        }
       })
     }
   }
