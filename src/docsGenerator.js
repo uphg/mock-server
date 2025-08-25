@@ -91,7 +91,7 @@ export class DocsGenerator {
         console.log(`📄 跳过未变更文档: ${fileName}`)
         return
       }
-    } catch (_error) {
+    } catch {
       // 文件不存在，继续生成
     }
 
