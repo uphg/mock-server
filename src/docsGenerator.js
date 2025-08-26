@@ -169,11 +169,23 @@ export class DocsGenerator {
    * 构建基本信息部分
    */
   buildBasicInfo(route, method, fullPath) {
-    const infoLines = [
-      `- **描述**: ${route.description || '暂无描述'}`,
-      `- **URL**: \`${fullPath}\``,
-      `- **请求类型**: \`${method}\``,
+    // const infoLines = [
+    //   `- **描述**: ${route.description || '暂无描述'}`,
+    //   `- **URL**: \`${fullPath}\``,
+    //   `- **请求类型**: \`${method}\``,
+    // ]
+
+    const codeUrl = [
+      `::: code-url ${method}`,
+      `\`\`\``,
+      fullPath,
+      `\`\`\``,
+      `:::`,
     ]
+
+    route.description && codeUrl.unshift(`${route.description || '暂无描述'}\n`)
+
+    const infoLines = [`## 基本信息\n`]
 
     // 添加状态码信息
     if (route.statusCode && route.statusCode !== 200) {
@@ -188,7 +200,7 @@ export class DocsGenerator {
     // 返回原始 markdown 字符串节点
     return {
       type: 'html',
-      value: infoLines.join('\n')
+      value: infoLines.concat(codeUrl).join('\n')
     }
   }
 

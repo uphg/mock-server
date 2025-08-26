@@ -47,7 +47,6 @@
       "name": "获取用户列表",
       "path": "/users",
       "method": "GET",
-      "description": "获取用户列表",
       "responseFile": "users.json",
       "headers": {
         "X-Total-Count": "100"
@@ -57,7 +56,6 @@
       "name": "获取用户详情",
       "path": "/users/:id",
       "method": "GET",
-      "description": "根据ID获取用户详情",
       "response": {
         "id": "{{params.id}}",
         "name": "用户{{params.id}}",
@@ -69,7 +67,6 @@
       "name": "创建新用户",
       "path": "/users",
       "method": "POST",
-      "description": "创建新用户",
       "statusCode": 201,
       "response": {
         "id": "{{body.id}}",
@@ -82,7 +79,6 @@
       "name": "获取产品列表",
       "path": "/products",
       "method": "GET",
-      "description": "获取产品列表",
       "responseFile": "products.json",
       "delay": 500
     },
@@ -90,14 +86,12 @@
       "name": "获取产品详情",
       "path": "/products/:id",
       "method": "GET",
-      "description": "获取产品详情",
       "responseFile": "product-detail.json"
     },
     {
       "name": "搜索接口",
       "path": "/search",
       "method": "GET",
-      "description": "搜索接口",
       "response": {
         "query": "{{query.q}}",
         "results": [
@@ -114,7 +108,6 @@
       "name": "错误响应示例",
       "path": "/error",
       "method": "GET",
-      "description": "错误响应示例",
       "statusCode": 400,
       "response": {
         "error": "Bad Request",

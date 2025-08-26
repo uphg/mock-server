@@ -12,7 +12,7 @@
 ## 接口列表
 
 - **GET /api/users** - 获取用户列表 ([详细文档](get-users.md))
-- **GET /api/users/:id** - 根据ID获取用户详情 ([详细文档](get-users-id.md))
+- **GET /api/users/:id** - 获取用户详情 ([详细文档](get-users-id.md))
 - **POST /api/users** - 创建新用户 ([详细文档](post-users.md))
 - **GET /api/products** - 获取产品列表 ([详细文档](get-products.md))
 - **GET /api/products/:id** - 获取产品详情 ([详细文档](get-products-id.md))
