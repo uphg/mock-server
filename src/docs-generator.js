@@ -6,10 +6,12 @@ import { parse as parsePathToRegexp } from 'path-to-regexp'
 import Handlebars from 'handlebars'
 import { root, heading, paragraph, text, list, listItem, tableRow, tableCell, code } from 'mdast-builder'
 
+const defaultDocsDir = './docs/api'
+
 export class DocsGenerator {
   constructor(config) {
     this.config = this.validateConfig(config)
-    this.docsDir = config.docsDir ?? './docs'
+    this.docsDir = config.docsDir ?? defaultDocsDir
   }
 
   validateConfig(config) {

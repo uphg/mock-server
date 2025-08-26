@@ -1,30 +1,28 @@
-# /users
+# /api/search
 
 ## 基本信息
 
-获取用户列表
+搜索测试
 
 ::: code-url GET
 ```
-/api/v1/users
+/api/search
 ```
 :::
+
+## 查询参数
+
+| 参数名 | 类型     | 必填 | 说明     |
+| --- | ------ | -- | ------ |
+| q   | string | 否  | 查询参数 q |
 
 ## 响应示例
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "张三",
-    "email": "zhang@example.com"
-  },
-  {
-    "id": 2,
-    "name": "李四",
-    "email": "li@example.com"
-  }
-]
+{
+  "query": "搜索关键词",
+  "results": []
+}
 ```
 
 ## 错误响应

@@ -52,8 +52,8 @@ node tests/testRunner.js
 
 ```bash
 # 运行单元测试
-node --test tests/configLoader.test.js
-node --test tests/routeGenerator.test.js
+node --test tests/config-loader.test.js
+node --test tests/route-generator.test.js
 node --test tests/schema.test.js
 
 # 运行集成测试

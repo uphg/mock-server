@@ -153,7 +153,7 @@ docs/
 
 ## 自定义扩展
 
-如需自定义文档格式，可以修改 `src/docsGenerator.js` 中的相关方法：
+如需自定义文档格式，可以修改 `src/docs-generator.js` 中的相关方法：
 
 - `buildRouteDocTree()` - 修改文档结构
 - `buildParamsTable()` - 修改参数表格格式

@@ -1,30 +1,19 @@
-# /users
+# /api/success
 
 ## 基本信息
 
-获取用户列表
-
 ::: code-url GET
 ```
-/api/v1/users
+/api/success
 ```
 :::
 
 ## 响应示例
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "张三",
-    "email": "zhang@example.com"
-  },
-  {
-    "id": 2,
-    "name": "李四",
-    "email": "li@example.com"
-  }
-]
+{
+  "status": "ok"
+}
 ```
 
 ## 错误响应

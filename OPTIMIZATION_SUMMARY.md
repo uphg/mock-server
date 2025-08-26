@@ -2,7 +2,7 @@
 
 ## 优化内容
 
-本次优化主要针对 `src/docsGenerator.js` 中的两个关键方法进行了改进：
+本次优化主要针对 `src/docs-generator.js` 中的两个关键方法进行了改进：
 
 ### 1. `extractParams` 方法优化
 

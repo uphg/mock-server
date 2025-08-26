@@ -9,8 +9,8 @@
     "dev": "node --watch src/index.js",
     "test": "node --test tests/**/*.test.js",
     "test:watch": "node --test --watch tests/**/*.test.js",
-    "docs:generate": "node src/generateDocs.js",
-    "docs:generate:watch": "node --watch src/generateDocs.js",
+    "docs:generate": "node src/build-docs.js",
+    "docs:generate:watch": "node --watch src/build-docs.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"

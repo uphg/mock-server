@@ -1,17 +1,13 @@
 #!/usr/bin/env node
 
 import path from 'path'
-import { fileURLToPath } from 'url'
-import { ConfigLoader } from './configLoader.js'
-import { DocsGenerator } from './docsGenerator.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { ConfigLoader } from './config-loader.js'
+import { DocsGenerator } from './docs-generator.js'
 
 /**
  * 生成API接口文档
  */
-async function generateDocs() {
+async function buildDocs() {
   try {
     console.log('🚀 开始生成API接口文档...')
     
@@ -41,7 +37,7 @@ async function generateDocs() {
 
 // 如果直接运行此脚本
 if (import.meta.url === `file://${process.argv[1]}`) {
-  generateDocs()
+  buildDocs()
 }
 
-export { generateDocs }
+export { buildDocs }

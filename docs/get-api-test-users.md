@@ -1,12 +1,12 @@
-# /users
+# /api/test-users
 
 ## 基本信息
 
-获取用户列表
+测试用户列表
 
 ::: code-url GET
 ```
-/api/v1/users
+/api/test-users
 ```
 :::
 
@@ -16,16 +16,22 @@
 [
   {
     "id": 1,
-    "name": "张三",
-    "email": "zhang@example.com"
+    "name": "测试用户1",
+    "email": "test1@example.com",
+    "role": "admin"
   },
   {
     "id": 2,
-    "name": "李四",
-    "email": "li@example.com"
+    "name": "测试用户2",
+    "email": "test2@example.com",
+    "role": "user"
   }
 ]
 ```
+
+## 响应头
+
+- **X-Total-Count**: 2
 
 ## 错误响应
 

@@ -1,13 +1,13 @@
-# /users
+# /api/test-users
 
 ## 基本信息
 
 - **状态码**: `201`
-创建用户
+创建测试用户
 
 ::: code-url POST
 ```
-/api/v1/users
+/api/test-users
 ```
 :::
 
@@ -36,8 +36,7 @@
   "id": "456",
   "name": "张三",
   "email": "zhangsan@example.com",
-  "created": true,
-  "timestamp": "2024-01-01T00:00:00Z"
+  "created": true
 }
 ```
 

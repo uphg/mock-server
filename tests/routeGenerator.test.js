@@ -1,7 +1,7 @@
 import { test, describe, beforeEach } from 'node:test'
 import assert from 'node:assert'
 import express from 'express'
-import { RouteGenerator } from '../src/routeGenerator.js'
+import { RouteGenerator } from '../src/route-generator.js'
 
 describe('RouteGenerator', () => {
   let app

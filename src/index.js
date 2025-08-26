@@ -2,9 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { ConfigLoader } from './configLoader.js'
-import { RouteGenerator } from './routeGenerator.js'
-import { DocsGenerator } from './docsGenerator.js'
+import { ConfigLoader } from './config-loader.js'
+import { RouteGenerator } from './route-generator.js'
+import { DocsGenerator } from './docs-generator.js'
 
 const __filename = fileURLToPath(import.meta.url)
 path.dirname(__filename)

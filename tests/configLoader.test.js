@@ -2,7 +2,7 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
 import fs from 'fs/promises'
 import path from 'path'
-import { ConfigLoader } from '../src/configLoader.js'
+import { ConfigLoader } from '../src/config-loader.js'
 
 describe('ConfigLoader', () => {
   let tempConfigPath

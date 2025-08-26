@@ -1,21 +1,25 @@
-# /users
+# /users/:id
 
 ## 基本信息
 
-- **状态码**: `201`
-创建用户
+更新用户
 
-::: code-url POST
+::: code-url PUT
 ```
-/api/v1/users
+/api/v1/users/:id
 ```
 :::
+
+## 路径参数
+
+| 参数名 | 类型     | 必填 | 说明      |
+| --- | ------ | -- | ------- |
+| id  | string | 是  | 路径参数 id |
 
 ## 请求体参数
 
 | 参数名   | 类型     | 必填 | 说明          |
 | ----- | ------ | -- | ----------- |
-| id    | string | 否  | 请求体参数 id    |
 | name  | string | 否  | 请求体参数 name  |
 | email | string | 否  | 请求体参数 email |
 
@@ -23,7 +27,6 @@
 
 ```json
 {
-  "id": 1,
   "name": "示例名称",
   "email": "example@example.com"
 }
@@ -33,11 +36,10 @@
 
 ```json
 {
-  "id": "456",
+  "id": "123",
   "name": "张三",
   "email": "zhangsan@example.com",
-  "created": true,
-  "timestamp": "2024-01-01T00:00:00Z"
+  "updated": true
 }
 ```
 

@@ -1,12 +1,12 @@
-# /users/:id
+# /api/test-users/:id
 
 ## 基本信息
 
-获取用户详情
+测试用户详情
 
 ::: code-url GET
 ```
-/api/v1/users/:id
+/api/test-users/:id
 ```
 :::
 
@@ -21,12 +21,8 @@
 ```json
 {
   "id": "123",
-  "name": "用户123",
-  "email": "user123@example.com",
-  "profile": {
-    "age": 25,
-    "city": "北京"
-  }
+  "name": "测试用户123",
+  "email": "test123@example.com"
 }
 ```
 

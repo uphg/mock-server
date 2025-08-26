@@ -2,9 +2,10 @@
 
 ## 基本信息
 
-获取用户详情
+- **状态码**: `204`
+删除用户
 
-::: code-url GET
+::: code-url DELETE
 ```
 /api/v1/users/:id
 ```
@@ -19,15 +20,7 @@
 ## 响应示例
 
 ```json
-{
-  "id": "123",
-  "name": "用户123",
-  "email": "user123@example.com",
-  "profile": {
-    "age": 25,
-    "city": "北京"
-  }
-}
+{}
 ```
 
 ## 错误响应

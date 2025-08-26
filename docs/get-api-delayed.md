@@ -1,30 +1,22 @@
-# /users
+# /api/delayed
 
 ## 基本信息
 
-获取用户列表
+- **响应延迟**: 100ms
+延迟响应测试
 
 ::: code-url GET
 ```
-/api/v1/users
+/api/delayed
 ```
 :::
 
 ## 响应示例
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "张三",
-    "email": "zhang@example.com"
-  },
-  {
-    "id": 2,
-    "name": "李四",
-    "email": "li@example.com"
-  }
-]
+{
+  "message": "延迟响应"
+}
 ```
 
 ## 错误响应
