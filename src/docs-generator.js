@@ -178,6 +178,7 @@ export class DocsGenerator {
     // ]
 
     const codeUrl = [
+      `## 基本信息\n`,
       `::: code-url ${method}`,
       `\`\`\``,
       fullPath,
@@ -185,9 +186,9 @@ export class DocsGenerator {
       `:::`,
     ]
 
-    route.description && codeUrl.unshift(`${route.description || '暂无描述'}\n`)
+    const infoLines = []
 
-    const infoLines = [`## 基本信息\n`]
+    route.description && infoLines.unshift(`- **描述**: ${route.description || '暂无描述'}`)
 
     // 添加状态码信息
     if (route.statusCode && route.statusCode !== 200) {
@@ -202,7 +203,7 @@ export class DocsGenerator {
     // 返回原始 markdown 字符串节点
     return {
       type: 'html',
-      value: infoLines.concat(codeUrl).join('\n')
+      value: codeUrl.concat(infoLines).join('\n')
     }
   }
 
