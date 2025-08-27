@@ -9,8 +9,8 @@
     "dev": "node --watch src/index.js",
     "test": "node --test tests/**/*.test.js",
     "test:watch": "node --test --watch tests/**/*.test.js",
-    "docs:generate": "node src/build-docs.js",
-    "docs:generate:watch": "node --watch src/build-docs.js",
+    "docs:generate": "node src/generate-docs.js",
+    "docs:generate:watch": "node --watch src/generate-docs.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
@@ -39,7 +39,6 @@
   },
   "devDependencies": {
     "chokidar": "^4.0.3",
-    "naive-ui": "^2.42.0",
     "supertest": "^7.1.4",
     "vitepress": "^1.6.4"
   }

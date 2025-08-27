@@ -41,8 +41,17 @@ class MockServer {
       
       // 启动服务器
       const port = config.port || 3000
+      const host = config.host || 'localhost'
       this.server = this.app.listen(port, () => {
+        const serverUrl = `http://${host}:${port}`
+        const baseUrl = config.baseUrl || '/'
+        const fullServerUrl = baseUrl === '/' ? serverUrl : `${serverUrl}${baseUrl}`
+        
         console.log(`🚀 Mock服务器启动成功！`)
+        console.log(`- 服务器地址: ${serverUrl}`)
+        console.log(`- 完整路径: ${fullServerUrl}`)
+        console.log(`- 健康检查: ${serverUrl}/health`)
+        console.log(`- API文档: ${serverUrl}${config.baseUrl ? `${config.baseUrl}/docs` : '/api/docs'}`)
         console.log(`- 端口: ${port}`)
         console.log(`- 配置文件: ${fullConfigPath}`)
         console.log(`- 基础路径: ${config.baseUrl || '/'}`)
@@ -116,23 +125,6 @@ class MockServer {
       console.log('🔥 配置文件热更新已启用')
     } catch (error) {
       console.warn('⚠️  配置文件热更新启用失败:', error.message)
-    }
-  }
-
-  generateApiDocs() {
-    const routes = this.routeGenerator.getActiveRoutes()
-    const port = this.server?.address()?.port
-    return {
-      title: 'Mock API 文档',
-      timestamp: new Date().toISOString(),
-      routes: routes.map(key => {
-        const [method, path] = key.split(':')
-        return {
-          method: method.toUpperCase(),
-          path,
-          url: `http://localhost:${port}${path}`
-        }
-      })
     }
   }
 

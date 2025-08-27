@@ -7,7 +7,7 @@ import { DocsGenerator } from './docs-generator.js'
 /**
  * 生成API接口文档
  */
-async function buildDocs() {
+async function generateDocs() {
   try {
     console.log('🚀 开始生成API接口文档...')
     
@@ -37,7 +37,7 @@ async function buildDocs() {
 
 // 如果直接运行此脚本
 if (import.meta.url === `file://${process.argv[1]}`) {
-  buildDocs()
+  generateDocs()
 }
 
-export { buildDocs }
+export { generateDocs }
