@@ -37,5 +37,3 @@
 - Update documentation if adding new routes or changing configuration schema.
 - Test both development and production modes if modifying server startup logic.
 - Verify hot reload functionality works correctly for configuration changes.
-
-## Git Commit
