@@ -1,6 +1,6 @@
 {
   "name": "mock-server-builder",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "Automatically generate mock data routing services based on configuration files",
   "main": "src/index.js",
   "type": "module",
