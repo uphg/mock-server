@@ -1,5 +1,13 @@
 # Mock Server AGENTS.md
 
+## Basic Information
+- Development Environment: Ubuntu
+- Source code uses Linux-style line breaks (LF)
+- Coding Style: JS/TS without semicolons, only adding them when necessary
+- Code Modification Guidelines: Do not reformat existing code unless explicitly requested
+- Function Extraction Rules: Single-line code under 100 characters will not be extracted prematurely unless repeated more than twice
+- Git Commit Guidelines: Follow the Conventional Commits guidelines
+
 ## Dev environment tips
 - Use `pnpm start` or `node src/index.js` to start the mock server in production mode.
 - Use `pnpm dev` or `node --watch src/index.js` for development with hot reload.
