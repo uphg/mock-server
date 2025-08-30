@@ -254,22 +254,14 @@ The project includes a complete test suite:
 ## 📁 Project Structure
 
 ```
-mock-server/
-├── src/                    # Source code
-│   ├── index.js           # Main entry file
-│   ├── config-loader.js   # Configuration loader
-│   ├── route-generator.js # Route generator
-│   ├── docs-generator.js  # Documentation generator
-│   ├── generate-docs.js   # Documentation generation script
-│   └── schema.js          # Configuration validation
-├── data/                  # Mock data files
-│   ├── users.json
-│   ├── products.json
-│   └── product-detail.json
-├── tests/                 # Test files
-├── docs/                  # Generated documentation
-├── mock.config.json       # Configuration file
-└── package.json
+.
+├─ data/                    # Mock data files
+│  ├─ users.json
+│  ├─ products.json
+│  └─ product-detail.json
+├─ docs/                    # Generated documentation
+├─ mock.config.json         # Configuration file
+└─ package.json
 ```
 
 ## 🔧 API Endpoints

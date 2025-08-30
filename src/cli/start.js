@@ -1,6 +1,7 @@
 import { spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
+import { fileURLToPath } from 'url'
 
 export async function startCommand(options) {
   const configPath = path.resolve(options.config)
@@ -19,7 +20,12 @@ export async function startCommand(options) {
     console.log('🔌 Port:', options.port)
   }
 
-  const args = [path.resolve('src/index.js'), configPath]
+  // Get the correct path to src/index.js using import.meta.url
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = path.dirname(__filename)
+  const indexPath = path.resolve(__dirname, '../index.js')
+  
+  const args = [indexPath, configPath]
   
   if (options.port) {
     args.push('--port', options.port)

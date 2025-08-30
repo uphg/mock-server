@@ -254,22 +254,14 @@ pnpm test:watch
 ## 📁 项目结构
 
 ```
-mock-server/
-├── src/                    # 源代码
-│   ├── index.js           # 主入口文件
-│   ├── config-loader.js   # 配置加载器
-│   ├── route-generator.js # 路由生成器
-│   ├── docs-generator.js  # 文档生成器
-│   ├── generate-docs.js   # 文档生成脚本
-│   └── schema.js          # 配置验证
-├── data/                   # Mock 数据文件
-│   ├── users.json
-│   ├── products.json
-│   └── product-detail.json
-├── tests/                  # 测试文件
-├── docs/                   # 生成的文档
-├── mock.config.json        # 配置文件
-└── package.json
+.
+├─ data/                    # Mock 数据文件
+│  ├─ users.json
+│  ├─ products.json
+│  └─ product-detail.json
+├─ docs/                    # 生成的文档
+├─ mock.config.json         # 配置文件
+└─ package.json
 ```
 
 ## 🔧 API 端点
