@@ -1,113 +1,106 @@
 # Mock Server
 
-🚀 一个功能强大的 Mock API 服务器，支持配置文件驱动、自动文档生成、热更新等特性。
+English | [中文](README.zh-CN.md)
 
-## ✨ 特性
+🚀 A powerful Mock API server with configuration-driven, auto-documentation generation, and hot-reloading features.
 
-- 📝 **配置驱动** - 通过 JSON 配置文件定义 API 路由
-- 🔄 **热更新** - 配置文件变更时自动重新加载路由
-- 📚 **自动文档生成** - 根据配置自动生成 Markdown API 文档
-- 🎯 **路由默认配置** - 支持为多个路由定义通用配置
-- 🌐 **CORS 支持** - 可配置的跨域资源共享
-- ⏱️ **响应延迟** - 模拟真实网络延迟
-- 📊 **健康检查** - 内置健康检查端点
-- 🔧 **模板变量** - 支持动态响应内容
-- 🧪 **测试友好** - 完整的测试套件
+## ✨ Features
 
-## 🚀 快速开始
+- 📝 **Configuration-driven** - Define API routes via JSON configuration files
+- 🔄 **Hot Reloading** - Automatically reloads routes when configuration files change
+- 📚 **Auto Documentation Generation** - Automatically generates Markdown API documentation from configurations
+- 🎯 **Route Default Configurations** - Supports defining common configurations for multiple routes
+- 🌐 **CORS Support** - Configurable Cross-Origin Resource Sharing
+- ⏱️ **Response Delay** - Simulate real network latency
+- 📊 **Health Check** - Built-in health check endpoint
+- 🔧 **Template Variables** - Support for dynamic response content
+- 🧪 **Test-friendly** - Complete test suite
 
-### CLI 工具（推荐）
+## 🚀 Quick Start
 
-#### 全局安装
+### CLI Tool (Recommended)
+
+#### Global Installation
 ```bash
 npm install -g mock-server-builder
 ```
 
-#### 项目内使用
+#### Usage within a project
 ```bash
-# 初始化项目
+# Initialize project
 mock-server init
 
-# 启动服务
+# Start server
+mock-server start
+
+# Start server in development mode (with hot reloading)
 mock-server start --dev
 
-# 生成文档
+# Generate documentation
+mock-server docs
+
+# Start documentation dev server
 mock-server docs --dev
 ```
 
-### 传统方式
+### Traditional Approach
 
-#### 安装依赖
+#### Install Dependencies
 ```bash
 pnpm install
 ```
 
-#### 启动服务器
+#### Start Server
 ```bash
-# 生产模式
+# Production mode
 pnpm start
 
-# 开发模式（热更新）
+# Development mode (hot reloading)
 pnpm dev
 ```
 
-#### 生成文档
+#### Generate Documentation
 ```bash
-# 生成API文档
+# Generate API documentation
 pnpm docs:generate
-
-# 开发模式（监听文件变化）
-pnpm docs:generate:watch
-
-# 启动文档开发服务器
-pnpm docs:dev
 ```
 
-#### 运行测试
-```bash
-# 运行所有测试
-pnpm test
-
-# 监听模式
-pnpm test:watch
-```
-
-### 启动服务器
+### Starting the Server
 
 ```bash
-# 生产模式
+# Production mode
 pnpm start
 
-# 开发模式（支持热更新）
-ppnpm dev
+# Development mode (with hot reloading)
+pnpm dev
 
-# 使用自定义配置文件
+# Using a custom configuration file
 pnpm start custom.config.json
 ```
 
-### 访问服务
+### Accessing the Service
 
-启动后，服务器会显示完整的访问信息：
+After starting, the server will display complete access information:
 
 ```
-🚀 Mock服务器启动成功！
-- 服务器地址: http://localhost:3001
-- 完整路径: http://localhost:3001/api
-- 健康检查: http://localhost:3001/health
-- API文档: http://localhost:3001/api/docs
-- 端口: 3001
-- 配置文件: /path/to/mock.config.json
-- 基础路径: /api
-- 全局延迟: 0ms
-- CORS: 启用
-- Mock目录: ./data
+🚀 Mock server started successfully!
+- Server address: http://localhost:3001
+- Full path: http://localhost:3001/api
+- Health check: http://localhost:3001/health
+- API documentation: http://localhost:3001/api/docs
+- Port: 3001
+- Configuration file: /path/to/mock.config.json
+- Base path: /api
+- Global delay: 0ms
+- CORS: Enabled
+- Mock directory: ./data
 ```
 
-## 📋 配置文件
+## 📋 Configuration File
 
-### 基本配置
+### Basic Configuration
 
-创建 `mock.config.json` 文件：
+Create a `mock.config.json` file:
 
 ```json
 {
@@ -118,7 +111,7 @@ pnpm start custom.config.json
   "mockDir": "./data",
   "routes": [
     {
-      "name": "获取用户列表",
+      "name": "Get user list",
       "path": "/users",
       "method": "GET",
       "responseFile": "users.json"
@@ -127,32 +120,31 @@ pnpm start custom.config.json
 }
 ```
 
-### 配置选项
+### Configuration Options
 
-| 选项 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `port` | number | 3000 | 服务器端口 |
-| `host` | string | localhost | 服务器主机 |
-| `baseUrl` | string | / | API 基础路径 |
-| `delay` | number | 0 | 全局响应延迟（毫秒） |
-| `cors` | boolean | true | 是否启用 CORS |
-| `mockDir` | string | ./data | Mock 数据文件目录 |
-| `docsDir` | string | ./docs/api | API 文档文件目录 |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `port` | number | 3000 | Server port |
+| `host` | string | localhost | Server host |
+| `baseUrl` | string | / | API base path |
+| `delay` | number | 0 | Global response delay (milliseconds) |
+| `cors` | boolean | true | Whether to enable CORS |
+| `mockDir` | string | ./data | Mock data file directory |
 
-## 🛣️ 路由配置
+## 🛣️ Route Configuration
 
-### 基本路由
+### Basic Routes
 
 ```json
 {
   "routes": [
     {
-      "name": "获取用户详情",
+      "name": "Get user details",
       "path": "/users/:id",
       "method": "GET",
       "response": {
         "id": "{{params.id}}",
-        "name": "用户{{params.id}}",
+        "name": "User {{params.id}}",
         "email": "user{{params.id}}@example.com"
       }
     }
@@ -160,38 +152,38 @@ pnpm start custom.config.json
 }
 ```
 
-### 路由选项
+### Route Options
 
-| 选项 | 类型 | 必需 | 描述 |
-|------|------|------|------|
-| `name` | string | 是 | 路由名称 |
-| `path` | string | 是 | 路由路径（支持参数） |
-| `method` | string | 是 | HTTP 方法 |
-| `response` | object | 否 | 直接响应数据 |
-| `responseFile` | string | 否 | 响应数据文件路径 |
-| `statusCode` | number | 否 | HTTP 状态码（默认 200） |
-| `headers` | object | 否 | 自定义响应头 |
-| `delay` | number | 否 | 路由级别延迟 |
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `name` | string | Yes | Route name |
+| `path` | string | Yes | Route path (supports parameters) |
+| `method` | string | Yes | HTTP method |
+| `response` | object | No | Direct response data |
+| `responseFile` | string | No | Response data file path |
+| `statusCode` | number | No | HTTP status code (default 200) |
+| `headers` | object | No | Custom response headers |
+| `delay` | number | No | Route-level delay |
 
-### 模板变量
+### Template Variables
 
-支持在响应中使用模板变量：
+Template variables are supported in responses:
 
-- `{{params.id}}` - 路径参数
-- `{{query.name}}` - 查询参数
-- `{{body.email}}` - 请求体参数
-- `{{responseTime}}` - 响应时间
+- `{{params.id}}` - Path parameters
+- `{{query.name}}` - Query parameters
+- `{{body.email}}` - Request body parameters
+- `{{responseTime}}` - Response time
 
-## 🎯 路由默认配置
+## 🎯 Route Default Configurations
 
-为多个路由定义通用配置，避免重复：
+Define common configurations for multiple routes to avoid repetition:
 
 ```json
 {
   "routeDefaults": [
     {
       "name": "api-headers",
-      "description": "API通用响应头配置",
+      "description": "API common response header configuration",
       "config": {
         "headers": {
           "Content-Type": "application/json",
@@ -205,190 +197,165 @@ pnpm start custom.config.json
 }
 ```
 
-### 配置优先级
+### Configuration Priority
 
-1. **路由显式配置** - 最高优先级
-2. **路由默认配置** - 中等优先级
-3. **全局默认配置** - 最低优先级
+1. **Explicit route configuration** - Highest priority
+2. **Route default configuration** - Medium priority
+3. **Global default configuration** - Lowest priority
 
-详细说明请参考 [ROUTE_DEFAULTS.md](./ROUTE_DEFAULTS.md)
+## 📚 Documentation Generation
 
-## 📚 文档生成
+### Auto Generation
 
-### 自动生成
-
-启动服务器时会自动生成 API 文档：
+API documentation is automatically generated when starting the server:
 
 ```bash
 pnpm start
 ```
 
-### 手动生成
+### Manual Generation
 
 ```bash
-# 生成文档
-ppnpm docs:generate
+# Generate documentation
+pnpm docs:generate
 
-# 监听模式
-ppnpm docs:generate:watch
+# Generate documentation using CLI tool
+mock-server docs
 ```
 
-### 文档预览
+Generated documentation includes:
+- API overview
+- Detailed documentation for each endpoint
+- Parameter tables
+- Request/response examples
+- Error response descriptions
 
-使用 VitePress 预览文档：
+## 🧪 Testing
 
-```bash
-# 开发模式
-ppnpm docs:dev
-
-# 构建文档
-ppnpm docs:build
-
-# 预览构建结果
-ppnpm docs:preview
-```
-
-生成的文档包含：
-- API 总览
-- 每个接口的详细文档
-- 参数表格
-- 请求/响应示例
-- 错误响应说明
-
-详细说明请参考 [DOCS_GENERATION.md](./DOCS_GENERATION.md)
-
-## 🧪 测试
-
-### 运行测试
+### Running Tests
 
 ```bash
-# 运行所有测试
+# Run all tests
 pnpm test
 
-# 监听模式
-ppnpm test:watch
+# Watch mode
+pnpm test:watch
 ```
 
-### 测试覆盖
+### Test Coverage
 
-项目包含完整的测试套件：
+The project includes a complete test suite:
 
-- 单元测试
-- 集成测试
-- E2E 测试
-- 性能测试
+- Unit tests
+- Integration tests
+- E2E tests
+- Performance tests
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 mock-server/
-├── src/                    # 源代码
-│   ├── index.js           # 主入口文件
-│   ├── config-loader.js   # 配置加载器
-│   ├── route-generator.js # 路由生成器
-│   ├── docs-generator.js  # 文档生成器
-│   ├── generate-docs.js   # 文档生成脚本
-│   └── schema.js          # 配置验证
-├── data/                   # Mock 数据文件
+├── src/                    # Source code
+│   ├── index.js           # Main entry file
+│   ├── config-loader.js   # Configuration loader
+│   ├── route-generator.js # Route generator
+│   ├── docs-generator.js  # Documentation generator
+│   ├── generate-docs.js   # Documentation generation script
+│   └── schema.js          # Configuration validation
+├── data/                  # Mock data files
 │   ├── users.json
 │   ├── products.json
 │   └── product-detail.json
-├── tests/                  # 测试文件
-├── docs/                   # 生成的文档
-├── mock.config.json        # 配置文件
+├── tests/                 # Test files
+├── docs/                  # Generated documentation
+├── mock.config.json       # Configuration file
 └── package.json
 ```
 
-## 🔧 API 端点
+## 🔧 API Endpoints
 
-### 内置端点
+### Built-in Endpoints
 
-| 端点 | 方法 | 描述 |
-|------|------|------|
-| `/health` | GET | 健康检查 |
-| `{baseUrl}/docs` | GET | API 文档 |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `{baseUrl}/docs` | GET | API documentation |
 
-### 示例端点
+### Example Endpoints
 
-基于默认配置的可用端点：
+Available endpoints based on default configuration:
 
-| 端点 | 方法 | 描述 |
-|------|------|------|
-| `/api/users` | GET | 获取用户列表 |
-| `/api/users/:id` | GET | 获取用户详情 |
-| `/api/users` | POST | 创建新用户 |
-| `/api/products` | GET | 获取产品列表 |
-| `/api/products/:id` | GET | 获取产品详情 |
-| `/api/search` | GET | 搜索接口 |
-| `/api/error` | GET | 错误响应示例 |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/users` | GET | Get user list |
+| `/api/users/:id` | GET | Get user details |
+| `/api/users` | POST | Create new user |
+| `/api/products` | GET | Get product list |
+| `/api/products/:id` | GET | Get product details |
+| `/api/search` | GET | Search interface |
+| `/api/error` | GET | Error response example |
 
-## 🌟 使用示例
+## 🌟 Usage Examples
 
-### 获取用户列表
+### Get User List
 
 ```bash
 curl http://localhost:3001/api/users
 ```
 
-响应：
+Response:
 ```json
 [
   {
     "id": 1,
-    "name": "张三",
-    "email": "zhangsan@example.com",
+    "name": "John Doe",
+    "email": "john@example.com",
     "age": 28,
-    "city": "北京"
+    "city": "New York"
   }
 ]
 ```
 
-### 获取用户详情
+### Get User Details
 
 ```bash
 curl http://localhost:3001/api/users/123
 ```
 
-响应：
+Response:
 ```json
 {
   "id": "123",
-  "name": "用户123",
+  "name": "User 123",
   "email": "user123@example.com",
   "createdAt": "2024-01-01T00:00:00Z"
 }
 ```
 
-### 创建用户
+### Create User
 
 ```bash
-curl -X POST http://localhost:3001/api/users 
-  -H "Content-Type: application/json" 
-  -d '{"name":"新用户","email":"new@example.com"}'
+curl -X POST http://localhost:3001/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"New User","email":"new@example.com"}'
 ```
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
-### 开发流程
+### Development Workflow
 
-1. Fork 项目
-2. 创建特性分支
-3. 提交更改
-4. 运行测试
-5. 提交 Pull Request
+1. Fork the project
+2. Create a feature branch
+3. Commit changes
+4. Run tests
+5. Submit a Pull Request
 
-## 📄 许可证
+## 📄 License
 
 MIT License
 
-## 🔗 相关文档
-
-- [路由默认配置说明](./ROUTE_DEFAULTS.md)
-- [文档生成功能说明](./DOCS_GENERATION.md)
-- [测试说明](./tests/README.md)
-
 ---
 
-如有问题或建议，请提交 [Issue](https://github.com/uphg/mock-server/issues)。"
+For any issues or suggestions, please submit an [Issue](https://github.com/uphg/mock-server/issues).
