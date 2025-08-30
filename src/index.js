@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 import { ConfigLoader } from './config-loader.js'
 import { RouteGenerator } from './route-generator.js'
 import { DocsGenerator } from './docs-generator.js'
+import net from 'net'
 
 const __filename = fileURLToPath(import.meta.url)
 path.dirname(__filename)
@@ -16,6 +17,41 @@ class MockServer {
     this.configLoader = null
     this.routeGenerator = null
     this.watcher = null
+  }
+
+  /**
+   * 检查端口是否可用
+   * @param {number} port - 要检查的端口号
+   * @returns {Promise<boolean>} 端口是否可用
+   */
+  async isPortAvailable(port) {
+    return new Promise((resolve) => {
+      const server = net.createServer()
+      server.unref()
+      server.on('error', () => {
+        resolve(false)
+      })
+      server.listen(port, () => {
+        server.close(() => {
+          resolve(true)
+        })
+      })
+    })
+  }
+
+  /**
+   * 查找可用端口
+   * @param {number} startPort - 起始端口号
+   * @param {number} maxPort - 最大端口号
+   * @returns {Promise<number|null>} 可用端口号或null
+   */
+  async findAvailablePort(startPort, maxPort = 65535) {
+    for (let port = startPort; port <= maxPort; port++) {
+      if (await this.isPortAvailable(port)) {
+        return port
+      }
+    }
+    return null
   }
 
   async start(configPath = './mock.config.json') {
@@ -40,8 +76,22 @@ class MockServer {
       await this.generateApiDocs(config)
       
       // 启动服务器
-      const port = config.port || 3000
+      let port = config.port || 3000
       const host = config.host || 'localhost'
+      
+      // 检查端口是否可用，如果不可用则查找下一个可用端口
+      if (!(await this.isPortAvailable(port))) {
+        console.log(`⚠️  端口 ${port} 已被占用，正在查找可用端口...`)
+        const availablePort = await this.findAvailablePort(port + 1)
+        if (availablePort) {
+          console.log(`✅ 找到可用端口: ${availablePort}`)
+          port = availablePort
+        } else {
+          console.error('❌ 无法找到可用端口')
+          process.exit(1)
+        }
+      }
+      
       this.server = this.app.listen(port, () => {
         const serverUrl = `http://${host}:${port}`
         const baseUrl = config.baseUrl || '/'
