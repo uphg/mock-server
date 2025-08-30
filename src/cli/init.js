@@ -59,24 +59,24 @@ const SAMPLE_CONFIG = {
 const SAMPLE_USERS = [
   {
     "id": 1,
-    "name": "张三",
+    "name": "Zhang San",
     "email": "zhangsan@example.com",
     "age": 28,
-    "city": "北京"
+    "city": "Beijing"
   },
   {
     "id": 2,
-    "name": "李四",
+    "name": "Li Si",
     "email": "lisi@example.com",
     "age": 32,
-    "city": "上海"
+    "city": "Shanghai"
   },
   {
     "id": 3,
-    "name": "王五",
+    "name": "Wang Wu",
     "email": "wangwu@example.com",
     "age": 25,
-    "city": "广州"
+    "city": "Guangzhou"
   }
 ]
 
@@ -85,21 +85,21 @@ const SAMPLE_PRODUCTS = [
     "id": 1,
     "name": "iPhone 15",
     "price": 5999,
-    "category": "手机",
+    "category": "Smartphone",
     "stock": 100
   },
   {
     "id": 2,
     "name": "MacBook Pro",
     "price": 12999,
-    "category": "电脑",
+    "category": "Laptop",
     "stock": 50
   },
   {
     "id": 3,
     "name": "AirPods Pro",
     "price": 1999,
-    "category": "耳机",
+    "category": "Earphones",
     "stock": 200
   }
 ]
@@ -109,19 +109,19 @@ const SAMPLE_PRODUCT_DETAIL = [
     "id": 1,
     "name": "iPhone 15",
     "price": 5999,
-    "category": "手机",
-    "description": "最新款iPhone，搭载A17芯片，支持5G网络",
+    "category": "Smartphone",
+    "description": "Latest iPhone model with A17 chip and 5G support",
     "specs": {
-      "screen": "6.1英寸",
+      "screen": "6.1 inches",
       "storage": "128GB",
-      "color": "午夜色"
+      "color": "Midnight"
     },
     "stock": 100,
     "reviews": [
       {
         "userId": 1,
         "rating": 5,
-        "comment": "非常好用，拍照效果很棒！"
+        "comment": "Very easy to use, great camera quality!"
       }
     ]
   },
@@ -129,10 +129,10 @@ const SAMPLE_PRODUCT_DETAIL = [
     "id": 2,
     "name": "MacBook Pro",
     "price": 12999,
-    "category": "电脑",
-    "description": "专业级笔记本电脑，搭载M3芯片",
+    "category": "Laptop",
+    "description": "Professional laptop with M3 chip",
     "specs": {
-      "screen": "14英寸",
+      "screen": "14 inches",
       "memory": "16GB",
       "storage": "512GB SSD"
     },
@@ -141,7 +141,7 @@ const SAMPLE_PRODUCT_DETAIL = [
       {
         "userId": 2,
         "rating": 4,
-        "comment": "性能强劲，但价格偏高"
+        "comment": "Powerful performance, but relatively expensive"
       }
     ]
   }
