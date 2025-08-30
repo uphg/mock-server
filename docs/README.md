@@ -4,19 +4,20 @@
 
 ## 服务器信息
 
-- **端口**: 3002
+- **端口**: 3001
 - **基础路径**: /api
 - **CORS**: 启用
 - **全局延迟**: 0ms
 
 ## 接口列表
 
-- **GET /api/test-users** - 测试用户列表 ([详细文档](get-api-test-users.md))
-- **GET /api/test-users/:id** - 测试用户详情 ([详细文档](get-api-test-users-id.md))
-- **POST /api/test-users** - 创建测试用户 ([详细文档](post-api-test-users.md))
-- **GET /api/search** - 搜索测试 ([详细文档](get-api-search.md))
-- **GET /api/delayed** - 延迟响应测试 ([详细文档](get-api-delayed.md))
-- **GET /api/error** - 错误响应测试 ([详细文档](get-api-error.md))
+- **GET /api/users** - 获取用户列表 ([详细文档](get-users.md))
+- **GET /api/users/:id** - 获取用户详情 ([详细文档](get-users-id.md))
+- **POST /api/users** - 创建新用户 ([详细文档](post-users.md))
+- **GET /api/products** - 获取产品列表 ([详细文档](get-products.md))
+- **GET /api/products/:id** - 获取产品详情 ([详细文档](get-products-id.md))
+- **GET /api/search** - 搜索接口 ([详细文档](get-search.md))
+- **GET /api/error** - 错误响应示例 ([详细文档](get-error.md))
 
 ## 通用说明
 

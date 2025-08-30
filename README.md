@@ -16,10 +16,60 @@
 
 ## 🚀 快速开始
 
-### 安装依赖
+### CLI 工具（推荐）
 
+#### 全局安装
+```bash
+npm install -g mock-server-builder
+```
+
+#### 项目内使用
+```bash
+# 初始化项目
+mock-server init
+
+# 启动服务
+mock-server start --dev
+
+# 生成文档
+mock-server docs --dev
+```
+
+### 传统方式
+
+#### 安装依赖
 ```bash
 pnpm install
+```
+
+#### 启动服务器
+```bash
+# 生产模式
+pnpm start
+
+# 开发模式（热更新）
+pnpm dev
+```
+
+#### 生成文档
+```bash
+# 生成API文档
+pnpm docs:generate
+
+# 开发模式（监听文件变化）
+pnpm docs:generate:watch
+
+# 启动文档开发服务器
+pnpm docs:dev
+```
+
+#### 运行测试
+```bash
+# 运行所有测试
+pnpm test
+
+# 监听模式
+pnpm test:watch
 ```
 
 ### 启动服务器

@@ -1,0 +1,6 @@
+.crush/
+tests/
+docs/
+data/
+AGENTS.md
+pnpm-lock.yaml

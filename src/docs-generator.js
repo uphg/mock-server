@@ -11,7 +11,7 @@ const defaultDocsDir = './docs/api'
 export class DocsGenerator {
   constructor(config) {
     this.config = this.validateConfig(config)
-    this.docsDir = config.docsDir ?? defaultDocsDir
+    this.docsDir = process.env.DOCS_OUTPUT_DIR || config.docsDir || defaultDocsDir
   }
 
   validateConfig(config) {
