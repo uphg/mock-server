@@ -95,13 +95,36 @@ class MockServer {
       this.server = this.app.listen(port, () => {
         const serverUrl = `http://${host}:${port}`
         const baseUrl = config.baseUrl || '/'
-        const fullServerUrl = baseUrl === '/' ? serverUrl : `${serverUrl}${baseUrl}`
+        
+        // 修复URL拼接逻辑
+        let fullServerUrl = serverUrl
+        if (baseUrl !== '/') {
+          if (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) {
+            // baseUrl是完整URL，直接使用
+            fullServerUrl = baseUrl
+          } else {
+            // baseUrl是路径，确保以/开头并拼接到serverUrl后面
+            const normalizedBaseUrl = baseUrl.startsWith('/') ? baseUrl : `/${baseUrl}`
+            fullServerUrl = `${serverUrl}${normalizedBaseUrl}`
+          }
+        }
+        
+        // 修复API文档URL拼接
+        let docsUrl = `${serverUrl}/api/docs`
+        if (config.baseUrl) {
+          if (config.baseUrl.startsWith('http://') || config.baseUrl.startsWith('https://')) {
+            docsUrl = `${config.baseUrl}/docs`
+          } else {
+            const normalizedBaseUrl = config.baseUrl.startsWith('/') ? config.baseUrl : `/${config.baseUrl}`
+            docsUrl = `${serverUrl}${normalizedBaseUrl}/docs`
+          }
+        }
         
         console.log(`🚀 Mock服务器启动成功！`)
         console.log(`- 服务器地址: ${serverUrl}`)
         console.log(`- 完整路径: ${fullServerUrl}`)
         console.log(`- 健康检查: ${serverUrl}/health`)
-        console.log(`- API文档: ${serverUrl}${config.baseUrl ? `${config.baseUrl}/docs` : '/api/docs'}`)
+        console.log(`- API文档: ${docsUrl}`)
         console.log(`- 端口: ${port}`)
         console.log(`- 配置文件: ${fullConfigPath}`)
         console.log(`- 基础路径: ${config.baseUrl || '/'}`)
