@@ -1,0 +1,9 @@
+id,name,email,age,department
+1,张三,zhangsan@example.com,25,技术部
+2,李四,lisi@example.com,30,市场部
+3,王五,wangwu@example.com,28,技术部
+4,赵六,zhaoliu@example.com,35,人事部
+5,钱七,qianqi@example.com,22,财务部
+6,孙八,sunba@example.com,27,技术部
+7,周九,zhoujiu@example.com,32,市场部
+8,吴十,wushi@example.com,29,人事部

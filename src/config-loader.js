@@ -4,6 +4,8 @@ import merge from 'lodash.merge'
 import { mockConfigSchema } from './schema.js'
 import omit from 'lodash.omit'
 import { match } from 'path-to-regexp'
+import Database from 'better-sqlite3'
+import { parse } from 'csv/sync'
 
 export class ConfigLoader {
   constructor(configPath) {
@@ -74,8 +76,26 @@ export class ConfigLoader {
         const filePath = path.resolve(this.baseDir, mockDir, route.responseFile)
         
         try {
-          const fileContent = await fs.readFile(filePath, 'utf-8')
-          route.response = JSON.parse(fileContent)
+          const fileExt = path.extname(filePath).toLowerCase()
+          
+          if (fileExt === '.json') {
+            // 处理 JSON 文件
+            const fileContent = await fs.readFile(filePath, 'utf-8')
+            route.response = JSON.parse(fileContent)
+          } else if (fileExt === '.db' || fileExt === '.sqlite' || fileExt === '.sqlite3') {
+            // 处理 SQLite 文件 - 保存文件路径和查询配置，在请求时处理
+            route.responseFileType = 'sqlite'
+            route.responseFilePath = filePath
+            route.response = null // 将在请求时动态加载
+          } else if (fileExt === '.csv') {
+            // 处理 CSV 文件 - 保存文件路径和配置，在请求时处理
+            route.responseFileType = 'csv'
+            route.responseFilePath = filePath
+            route.response = null // 将在请求时动态加载
+          } else {
+            throw new Error(`不支持的文件格式: ${fileExt}`)
+          }
+          
           delete route.responseFile
         } catch (error) {
           throw new Error(`加载响应文件失败: ${filePath} - ${error.message}`)
@@ -284,5 +304,77 @@ export class ConfigLoader {
     
     // 将中间的 * 替换为 *segment
     return pattern.replace(/\*/g, '*segment')
+  }
+
+  /**
+   * 加载 SQLite 数据
+   * @param {string} filePath - SQLite 文件路径
+   * @param {object} route - 路由配置
+   * @returns {Promise<object>} 返回查询结果
+   */
+  async loadSQLiteData(filePath, route) {
+    try {
+      const db = new Database(filePath)
+      db.pragma('journal_mode = WAL')
+      
+      // 默认查询配置
+      const queryConfig = route.sqliteQuery || {
+        table: 'data',
+        limit: 100
+      }
+      
+      let query
+      let params = []
+      
+      if (queryConfig.query) {
+        // 使用自定义查询
+        query = queryConfig.query
+        params = queryConfig.params || []
+      } else {
+        // 构建默认查询
+        const table = queryConfig.table || 'data'
+        const limit = queryConfig.limit || 100
+        const where = queryConfig.where || ''
+        
+        query = `SELECT * FROM ${table}`
+        if (where) {
+          query += ` WHERE ${where}`
+        }
+        query += ` LIMIT ${limit}`
+      }
+      
+      const stmt = db.prepare(query)
+      const result = stmt.all(...params)
+      
+      db.close()
+      
+      return result
+    } catch (error) {
+      throw new Error(`SQLite 查询失败: ${error.message}`)
+    }
+  }
+
+  /**
+   * 加载 CSV 数据
+   * @param {string} filePath - CSV 文件路径
+   * @param {object} route - 路由配置
+   * @returns {Promise<object>} 返回解析后的数据
+   */
+  async loadCSVData(filePath, route) {
+    try {
+      const fileContent = await fs.readFile(filePath, 'utf-8')
+      
+      // CSV 解析配置
+      const csvConfig = route.csvConfig || {
+        columns: true,
+        skip_empty_lines: true
+      }
+      
+      const records = parse(fileContent, csvConfig)
+      
+      return records
+    } catch (error) {
+      throw new Error(`CSV 解析失败: ${error.message}`)
+    }
   }
 }
