@@ -199,11 +199,11 @@ export async function initCommand(options) {
         // 添加脚本（如果不存在）
         let scriptsAdded = false
         if (!packageJson.scripts['mock:start']) {
-          packageJson.scripts['mock:start'] = 'mock-server start --dev'
+          packageJson.scripts['mock:start'] = 'mockfly dev'
           scriptsAdded = true
         }
         if (!packageJson.scripts['mock:docs']) {
-          packageJson.scripts['mock:docs'] = 'mock-server docs --dev'
+          packageJson.scripts['mock:docs'] = 'mockfly docs --dev'
           scriptsAdded = true
         }
 
@@ -222,8 +222,8 @@ export async function initCommand(options) {
 
     console.log('\n🎉 Mock server initialized successfully!')
     console.log('\nNext steps:')
-    console.log('  1. Run "mock-server start" to start the server')
-    console.log('  2. Run "mock-server docs --dev" to start documentation server')
+    console.log('  1. Run "mockfly start" to start the server')
+    console.log('  2. Run "mockfly docs --dev" to start documentation server')
     console.log('  3. Visit http://localhost:3000/api/users to test the API')
 
   } catch (error) {

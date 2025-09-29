@@ -44,7 +44,7 @@ Important: Do not display the description "Currently in strict read-only mode, n
 - CORS, delays, headers, and status codes are configurable per route or globally.
 
 ## PR instructions
-- Title format: [mock-server] <Title>
+- Title format: [mockfly] <Title>
 - Always run `pnpm test` before committing to ensure all tests pass.
 - Update documentation if adding new routes or changing configuration schema.
 - Test both development and production modes if modifying server startup logic.

@@ -6,8 +6,8 @@ import { startCommand } from '../src/cli/start.js'
 import { docsCommand } from '../src/cli/docs.js'
 
 program
-  .name('mock-server')
-  .description('CLI tool for mock server with auto-generated documentation')
+  .name('mockfly')
+  .description('CLI tool for mockfly with auto-generated documentation')
   .version('1.0.0')
 
 program

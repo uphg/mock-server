@@ -22,25 +22,25 @@
 
 #### 全局安装
 ```bash
-npm install -g mock-server-builder
+npm install -g mockfly
 ```
 
 #### 项目内使用
 ```bash
-# 初始化项目
-mock-server init
+# 启动 mock 服务
+mockfly start
 
-# 启动服务
-mock-server start
-
-# 开发模式启动服务（支持热更新）
-mock-server start --dev
+# 开发模式（热重载）
+mockfly dev
 
 # 生成文档
-mock-server docs
+mockfly docs
 
-# 启动文档开发服务器
-mock-server docs --dev
+# 文档开发模式
+mockfly docs --dev
+
+# 初始化项目（如果需要保留）
+mockfly init
 ```
 
 ### 传统方式
@@ -220,7 +220,7 @@ pnpm start
 pnpm docs:generate
 
 # 使用CLI工具生成文档
-mock-server docs
+mockfly docs
 ```
 
 生成的文档包含：

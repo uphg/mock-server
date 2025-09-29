@@ -9,7 +9,7 @@ export async function startCommand(options) {
   // Check if config file exists
   if (!fs.existsSync(configPath)) {
     console.error('❌ Configuration file not found:', configPath)
-    console.log('💡 Run "mock-server init" to create a configuration file')
+    console.log('💡 Run "mockfly init" to create a configuration file')
     process.exit(1)
   }
 

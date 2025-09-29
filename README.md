@@ -22,25 +22,25 @@ English | [中文](README.zh-CN.md)
 
 #### Global Installation
 ```bash
-npm install -g mock-server-builder
+npm install -g mockfly
 ```
 
 #### Usage within a project
 ```bash
-# Initialize project
-mock-server init
+# 启动 mock 服务
+mockfly start
 
-# Start server
-mock-server start
+# 开发模式（热重载）
+mockfly dev
 
-# Start server in development mode (with hot reloading)
-mock-server start --dev
+# 生成文档
+mockfly docs
 
-# Generate documentation
-mock-server docs
+# 文档开发模式
+mockfly docs --dev
 
-# Start documentation dev server
-mock-server docs --dev
+# 初始化项目（如果需要保留）
+mockfly init
 ```
 
 ### Traditional Approach
@@ -220,7 +220,7 @@ pnpm start
 pnpm docs:generate
 
 # Generate documentation using CLI tool
-mock-server docs
+mockfly docs
 ```
 
 Generated documentation includes:

@@ -1,11 +1,11 @@
 {
-  "name": "mock-server-builder",
-  "version": "0.1.0-alpha.5",
+  "name": "mockfly",
+  "version": "0.1.0-alpha.6",
   "description": "Automatically generate mock data routing services based on configuration files",
   "main": "src/index.js",
   "type": "module",
   "bin": {
-    "mock-server": "./bin/cli.js"
+    "mockfly": "./bin/cli.js"
   },
   "scripts": {
     "start": "node src/index.js",
