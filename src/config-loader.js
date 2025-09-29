@@ -72,37 +72,64 @@ export class ConfigLoader {
     
     for (const route of config.routes) {
       if (route.responseFile) {
-        // 构建完整的文件路径
         const filePath = path.resolve(this.baseDir, mockDir, route.responseFile)
-        
+
         try {
-          const fileExt = path.extname(filePath).toLowerCase()
-          
-          if (fileExt === '.json') {
-            // 处理 JSON 文件
-            const fileContent = await fs.readFile(filePath, 'utf-8')
-            route.response = JSON.parse(fileContent)
-          } else if (fileExt === '.db' || fileExt === '.sqlite' || fileExt === '.sqlite3') {
-            // 处理 SQLite 文件 - 保存文件路径和查询配置，在请求时处理
+          // 检查文件是否存在
+          await fs.access(filePath)
+
+          // 如果已经明确设置了 responseType 为 blob，保留 responseFile
+          if (route.responseType === 'blob') {
+            route.responseFilePath = filePath
+            route.contentType = route.contentType || this.getContentType(path.extname(filePath))
+            route.response = null // 文件流将在请求时处理
+            continue // 继续处理下一个路由
+          }
+
+          // 检查文件扩展名
+          const ext = path.extname(filePath).toLowerCase()
+
+          // 自动检测 blob 文件类型
+          const blobExtensions = ['.xlsx', '.xls', '.docx', '.doc', '.pdf', '.zip', '.png', '.jpg', '.jpeg', '.gif', '.txt']
+
+          if (blobExtensions.includes(ext)) {
+            // Blob 文件类型
+            route.responseType = 'blob'
+            route.responseFilePath = filePath
+            route.contentType = route.contentType || this.getContentType(ext)
+            route.response = null // 文件流将在请求时处理
+            // 对于 blob 文件，保留 responseFile 用于文件名处理
+          } else if (ext === '.db') {
+            // SQLite 数据库文件
             route.responseFileType = 'sqlite'
             route.responseFilePath = filePath
             route.response = null // 将在请求时动态加载
-          } else if (fileExt === '.csv') {
-            // 处理 CSV 文件 - 保存文件路径和配置，在请求时处理
+            delete route.responseFile
+          } else if (ext === '.csv') {
+            // CSV 文件
             route.responseFileType = 'csv'
             route.responseFilePath = filePath
             route.response = null // 将在请求时动态加载
+            delete route.responseFile
           } else {
-            throw new Error(`不支持的文件格式: ${fileExt}`)
+            // 其他文件类型，尝试作为 JSON 解析
+            const fileContent = await fs.readFile(filePath, 'utf-8')
+            try {
+              route.response = JSON.parse(fileContent)
+            } catch {
+              throw new Error(`文件 ${route.responseFile} 不是有效的 JSON 格式`)
+            }
+            delete route.responseFile
           }
-          
-          delete route.responseFile
-        } catch (error) {
-          throw new Error(`加载响应文件失败: ${filePath} - ${error.message}`)
-        }
-      }
-    }
-  }
+         } catch (error) {
+           if (error.code === 'ENOENT') {
+             throw new Error(`文件 ${route.responseFile} 不存在`)
+           }
+           throw error
+         }
+       }
+     }
+   }
 
   async watchConfig(onChange) {
     const chokidar = await import('chokidar')
@@ -355,26 +382,49 @@ export class ConfigLoader {
   }
 
   /**
-   * 加载 CSV 数据
-   * @param {string} filePath - CSV 文件路径
-   * @param {object} route - 路由配置
-   * @returns {Promise<object>} 返回解析后的数据
-   */
-  async loadCSVData(filePath, route) {
-    try {
-      const fileContent = await fs.readFile(filePath, 'utf-8')
-      
-      // CSV 解析配置
-      const csvConfig = route.csvConfig || {
-        columns: true,
-        skip_empty_lines: true
-      }
-      
-      const records = parse(fileContent, csvConfig)
-      
-      return records
-    } catch (error) {
-      throw new Error(`CSV 解析失败: ${error.message}`)
-    }
-  }
-}
+    * 加载 CSV 数据
+    * @param {string} filePath - CSV 文件路径
+    * @param {object} route - 路由配置
+    * @returns {Promise<object>} 返回解析后的数据
+    */
+   async loadCSVData(filePath, route) {
+     try {
+       const fileContent = await fs.readFile(filePath, 'utf-8')
+
+       // CSV 解析配置
+       const csvConfig = route.csvConfig || {
+         columns: true,
+         skip_empty_lines: true
+       }
+
+       const records = parse(fileContent, csvConfig)
+
+       return records
+     } catch (error) {
+       throw new Error(`CSV 解析失败: ${error.message}`)
+     }
+   }
+
+   /**
+    * 根据文件扩展名获取 MIME 类型
+    * @param {string} ext - 文件扩展名（包含点号，如 .xlsx）
+    * @returns {string} MIME 类型
+    */
+   getContentType(ext) {
+     const mimeTypes = {
+       '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+       '.xls': 'application/vnd.ms-excel',
+       '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+       '.doc': 'application/msword',
+       '.pdf': 'application/pdf',
+       '.zip': 'application/zip',
+       '.png': 'image/png',
+       '.jpg': 'image/jpeg',
+       '.jpeg': 'image/jpeg',
+       '.gif': 'image/gif',
+       '.txt': 'text/plain'
+     }
+
+     return mimeTypes[ext.toLowerCase()] || 'application/octet-stream'
+   }
+ }

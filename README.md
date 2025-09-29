@@ -161,9 +161,34 @@ Create a `mock.config.json` file:
 | `method` | string | Yes | HTTP method |
 | `response` | object | No | Direct response data |
 | `responseFile` | string | No | Response data file path |
+| `responseType` | string | No | Response type: 'json' or 'blob' (default 'json') |
+| `contentType` | string | No | Content-Type for blob responses (auto-detected) |
+| `fileName` | string | No | Download filename for blob responses |
 | `statusCode` | number | No | HTTP status code (default 200) |
 | `headers` | object | No | Custom response headers |
 | `delay` | number | No | Route-level delay |
+
+### File Stream Responses
+
+For downloading files (Excel, Word, PDF, etc.), use `responseType: "blob"`:
+
+```json
+{
+  "routes": [
+    {
+      "name": "Download Excel Report",
+      "path": "/download/excel",
+      "method": "GET",
+      "responseType": "blob",
+      "responseFile": "monthly-report.xlsx",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "fileName": "monthly-report.xlsx"
+    }
+  ]
+}
+```
+
+Supported file types are automatically detected: `.xlsx`, `.xls`, `.docx`, `.doc`, `.pdf`, `.zip`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.txt`, `.csv`
 
 ### Template Variables
 

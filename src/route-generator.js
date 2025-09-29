@@ -1,7 +1,9 @@
 import Handlebars from 'handlebars'
 import Database from 'better-sqlite3'
 import { parse } from 'csv/sync'
-import fs from 'fs/promises'
+import fs from 'fs'
+import fsPromises from 'fs/promises'
+import path from 'path'
 
 export class RouteGenerator {
   constructor(app) {
@@ -45,7 +47,7 @@ export class RouteGenerator {
     }
   }
 
-  createHandler(route, _config) {
+  createHandler(route, globalConfig) {
     return async (req, res) => {
       try {
         // 路由级延迟（优先级高于全局延迟）
@@ -63,25 +65,69 @@ export class RouteGenerator {
           })
         }
 
-        // 处理动态响应
-        let response
-        if (route.responseFileType === 'sqlite') {
-          response = await this.loadSQLiteData(route, req)
-        } else if (route.responseFileType === 'csv') {
-          response = await this.loadCSVData(route, req)
-        } else {
-          response = this.processResponse(route.response, req)
-        }
+        // 获取响应类型
+        const responseType = route.responseType || 'json'
 
-        // 发送响应
-        res.status(statusCode).json(response)
+        if (responseType === 'blob') {
+          // 处理文件流响应
+          const mockDir = globalConfig.mockDir || './data'
+          const filePath = path.resolve(mockDir, route.responseFile)
+          const fileName = route.fileName || path.basename(route.responseFile)
+
+          // 检查文件是否存在
+          try {
+            await fsPromises.access(filePath)
+          } catch {
+            res.status(404).json({
+              error: 'File Not Found',
+              message: `File ${route.responseFile} not found`
+            })
+            return
+          }
+
+          // 设置下载头
+          const contentType = route.contentType || this.getContentType(path.extname(filePath))
+          res.setHeader('Content-Type', contentType)
+          res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`)
+
+          // 发送文件流
+          const fileStream = fs.createReadStream(filePath)
+          fileStream.pipe(res)
+
+          // 处理流错误
+          fileStream.on('error', (error) => {
+            console.error(`文件流错误 ${route.path}:`, error)
+            if (!res.headersSent) {
+              res.status(500).json({
+                error: 'Internal Server Error',
+                message: 'File stream error'
+              })
+            }
+          })
+
+        } else {
+          // 处理动态响应
+          let response
+          if (route.responseFileType === 'sqlite') {
+            response = await this.loadSQLiteData(route, req)
+          } else if (route.responseFileType === 'csv') {
+            response = await this.loadCSVData(route, req)
+          } else {
+            response = this.processResponse(route.response, req)
+          }
+
+          // 发送 JSON 响应
+          res.status(statusCode).json(response)
+        }
 
       } catch (error) {
         console.error(`路由处理错误 ${route.path}:`, error)
-        res.status(500).json({
-          error: 'Internal Server Error',
-          message: error.message
-        })
+        if (!res.headersSent) {
+          res.status(500).json({
+            error: 'Internal Server Error',
+            message: error.message
+          })
+        }
       }
     }
   }
@@ -256,6 +302,30 @@ export class RouteGenerator {
     } catch (error) {
       throw new Error(`CSV 解析失败: ${error.message}`)
     }
+  }
+
+  /**
+   * 根据文件扩展名获取 MIME 类型
+   * @param {string} ext - 文件扩展名
+   * @returns {string} MIME 类型
+   */
+  getContentType(ext) {
+    const contentTypes = {
+      '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      '.xls': 'application/vnd.ms-excel',
+      '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      '.doc': 'application/msword',
+      '.pdf': 'application/pdf',
+      '.zip': 'application/zip',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.txt': 'text/plain',
+      '.csv': 'text/csv',
+      '.json': 'application/json'
+    }
+    return contentTypes[ext.toLowerCase()] || 'application/octet-stream'
   }
 
   printRoutes() {

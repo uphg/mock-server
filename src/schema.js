@@ -108,15 +108,29 @@ export const mockConfigSchema = {
               { type: 'boolean' }
             ]
           },
-          responseFile: { 
-            type: 'string',
-            description: 'Response data file path (relative to mockDir)'
-          },
-          statusCode: { 
-            type: 'number', 
-            default: 200,
-            description: 'HTTP status code'
-          },
+           responseFile: {
+             type: 'string',
+             description: 'Response data file path (relative to mockDir)'
+           },
+           responseType: {
+             type: 'string',
+             enum: ['json', 'blob'],
+             default: 'json',
+             description: 'Response type: json for JSON responses, blob for file streams'
+           },
+           contentType: {
+             type: 'string',
+             description: 'Content-Type header for blob responses (auto-detected for common file types)'
+           },
+           fileName: {
+             type: 'string',
+             description: 'Download filename for blob responses (defaults to original filename)'
+           },
+           statusCode: {
+             type: 'number',
+             default: 200,
+             description: 'HTTP status code'
+           },
           delay: { 
             type: 'number', 
             default: 0,

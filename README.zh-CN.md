@@ -155,15 +155,40 @@ pnpm start custom.config.json
 ### 路由选项
 
 | 选项 | 类型 | 必需 | 描述 |
-|------|------|------|------|
+|------|------|------|------|------|
 | `name` | string | 是 | 路由名称 |
 | `path` | string | 是 | 路由路径（支持参数） |
 | `method` | string | 是 | HTTP 方法 |
 | `response` | object | 否 | 直接响应数据 |
 | `responseFile` | string | 否 | 响应数据文件路径 |
+| `responseType` | string | 否 | 响应类型：'json' 或 'blob'（默认 'json'） |
+| `contentType` | string | 否 | blob 响应的 Content-Type（自动检测） |
+| `fileName` | string | 否 | blob 响应的下载文件名 |
 | `statusCode` | number | 否 | HTTP 状态码（默认 200） |
 | `headers` | object | 否 | 自定义响应头 |
 | `delay` | number | 否 | 路由级别延迟 |
+
+### 文件流响应
+
+对于下载文件（Excel、Word、PDF 等），使用 `responseType: "blob"`：
+
+```json
+{
+  "routes": [
+    {
+      "name": "下载 Excel 报表",
+      "path": "/download/excel",
+      "method": "GET",
+      "responseType": "blob",
+      "responseFile": "monthly-report.xlsx",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "fileName": "monthly-report.xlsx"
+    }
+  ]
+}
+```
+
+支持的文件类型会自动检测：`.xlsx`、`.xls`、`.docx`、`.doc`、`.pdf`、`.zip`、`.png`、`.jpg`、`.jpeg`、`.gif`、`.txt`、`.csv`
 
 ### 模板变量
 

@@ -517,7 +517,7 @@ export class DocsGenerator {
       const example = {}
       
       // 从响应中提取可能的请求字段
-      this.extractExampleFromResponse(route.response, example)
+      this.extractExampleFromResponse(route.response, example, route)
       
       return Object.keys(example).length > 0 ? example : null
     }
@@ -578,7 +578,7 @@ export class DocsGenerator {
       return []
     }
 
-    const example = this.generateResponseExample(route.response)
+    const example = this.generateResponseExample(route.response, route)
     
     return [
       heading(2, text('响应示例')),
@@ -589,26 +589,35 @@ export class DocsGenerator {
   /**
    * 生成响应示例
    */
-  generateResponseExample(response) {
+  generateResponseExample(response, route = {}) {
+    // 如果是 blob 响应类型，返回文件下载信息
+    if (route.responseType === 'blob') {
+      return {
+        message: 'File download response',
+        contentType: route.contentType || 'application/octet-stream',
+        fileName: route.fileName || 'downloaded-file',
+        disposition: 'attachment'
+      }
+    }
+
     if (typeof response === 'string') {
       return response.replace(/\{\{[^}]+\}\}/g, (match) => {
-        const variable = match.replace(/[{}]/g, '').trim()
-        return this.generateExampleValueForTemplate(variable)
+        return this.generateExampleValueForTemplate(match)
       })
     }
-    
+
     if (Array.isArray(response)) {
-      return response.map(item => this.generateResponseExample(item))
+      return response.map(item => this.generateResponseExample(item, route))
     }
-    
+
     if (typeof response === 'object' && response !== null) {
       const example = {}
       Object.entries(response).forEach(([key, value]) => {
-        example[key] = this.generateResponseExample(value)
+        example[key] = this.generateResponseExample(value, route)
       })
       return example
     }
-    
+
     return response
   }
 

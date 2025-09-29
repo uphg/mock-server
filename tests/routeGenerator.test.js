@@ -225,8 +225,29 @@ describe('RouteGenerator', () => {
     }
 
     routeGenerator.generateRoutes(config)
-    
+
     const activeRoutes = routeGenerator.getActiveRoutes()
     assert.strictEqual(activeRoutes[0], 'get:/api/test')
+  })
+
+  test('应该处理blob响应类型', () => {
+    const config = {
+      routes: [
+        {
+          path: '/api/download',
+          method: 'GET',
+          responseType: 'blob',
+          responseFilePath: '/path/to/file.xlsx',
+          contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          fileName: 'data.xlsx'
+        }
+      ]
+    }
+
+    routeGenerator.generateRoutes(config)
+
+    const activeRoutes = routeGenerator.getActiveRoutes()
+    assert.strictEqual(activeRoutes.length, 1)
+    assert.strictEqual(activeRoutes[0], 'get:/api/download')
   })
 })

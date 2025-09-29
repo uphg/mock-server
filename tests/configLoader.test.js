@@ -161,7 +161,7 @@ describe('ConfigLoader', () => {
 
     await assert.rejects(
       async () => await configLoader.loadConfig(),
-      /加载响应文件失败/
+      /加载配置文件失败/
     )
   })
 
