@@ -1,6 +1,6 @@
 {
   "name": "mockfly",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Automatically generate mock data routing services based on configuration files",
   "main": "src/index.js",
   "type": "module",
@@ -13,10 +13,7 @@
     "test": "node --test tests/**/*.test.js",
     "test:watch": "node --test --watch tests/**/*.test.js",
     "docs:generate": "node src/generate-docs.js",
-    "docs:generate:watch": "node --watch src/generate-docs.js",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:generate:watch": "node --watch src/generate-docs.js"
   },
   "keywords": [
     "mock",

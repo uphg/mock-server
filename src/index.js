@@ -177,7 +177,7 @@ class MockServer {
             )
           }
 
-          // Help 帮助文档
+          // // Help 帮助文档
           console.log(pc.dim(`  ${pc.green('➜')}  ${pc.bold('Help')}: use `) + pc.bold('--help') + pc.dim(' or ') + pc.bold('-h') + pc.dim(' to show help'))
 
           // Log 日志输出

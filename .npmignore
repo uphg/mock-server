@@ -8,3 +8,5 @@ AGENTS.md
 pnpm-lock.yaml
 opencodetmp/
 examples/
+plugins/
+*.log

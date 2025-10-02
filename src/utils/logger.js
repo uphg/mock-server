@@ -74,8 +74,8 @@ class Logger {
   }
 }
 
-export  function colorUrl(url) {
+export function colorUrl(url) {
   return pc.cyan(url.replace(/:(\d+)\//, (_, port) => `:${pc.bold(port)}/`))
 }
-
+  
 export const logger = new Logger()
