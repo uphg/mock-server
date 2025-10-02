@@ -2,6 +2,7 @@ import { test, describe, beforeEach } from 'node:test'
 import assert from 'node:assert'
 import express from 'express'
 import { RouteGenerator } from '../src/route-generator.js'
+import { processResponse, processTemplate } from '../src/utils/route.js'
 
 describe('RouteGenerator', () => {
   let app
@@ -75,7 +76,7 @@ describe('RouteGenerator', () => {
     }
 
     const template = '用户ID: {{params.id}}'
-    const result = routeGenerator.processTemplate(template, mockReq)
+    const result = processTemplate(template, mockReq)
     
     assert.strictEqual(result, '用户ID: 123')
   })
@@ -88,7 +89,7 @@ describe('RouteGenerator', () => {
     }
 
     const template = '搜索: {{query.search}}'
-    const result = routeGenerator.processTemplate(template, mockReq)
+    const result = processTemplate(template, mockReq)
     
     assert.strictEqual(result, '搜索: test')
   })
@@ -101,7 +102,7 @@ describe('RouteGenerator', () => {
     }
 
     const template = '姓名: {{body.name}}'
-    const result = routeGenerator.processTemplate(template, mockReq)
+    const result = processTemplate(template, mockReq)
     
     assert.strictEqual(result, '姓名: John')
   })
@@ -126,7 +127,7 @@ describe('RouteGenerator', () => {
       }
     }
 
-    const result = routeGenerator.processResponse(response, mockReq)
+    const result = processResponse(response, mockReq)
     
     assert.deepStrictEqual(result, {
       user: {
@@ -154,7 +155,7 @@ describe('RouteGenerator', () => {
       { name: 'Product 2', category: '{{params.category}}' }
     ]
 
-    const result = routeGenerator.processResponse(response, mockReq)
+    const result = processResponse(response, mockReq)
     
     assert.deepStrictEqual(result, [
       { name: 'Product 1', category: 'electronics' },
@@ -170,7 +171,7 @@ describe('RouteGenerator', () => {
     }
 
     const template = 'ID: {{params.id}}, Name: {{body.name}}'
-    const result = routeGenerator.processTemplate(template, mockReq)
+    const result = processTemplate(template, mockReq)
     
     assert.strictEqual(result, 'ID: , Name: ')
   })

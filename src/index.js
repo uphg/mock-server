@@ -109,22 +109,10 @@ class MockServer {
           }
         }
         
-        // 修复API文档URL拼接
-        let docsUrl = `${serverUrl}/api/docs`
-        if (config.baseUrl) {
-          if (config.baseUrl.startsWith('http://') || config.baseUrl.startsWith('https://')) {
-            docsUrl = `${config.baseUrl}/docs`
-          } else {
-            const normalizedBaseUrl = config.baseUrl.startsWith('/') ? config.baseUrl : `/${config.baseUrl}`
-            docsUrl = `${serverUrl}${normalizedBaseUrl}/docs`
-          }
-        }
-        
         console.log(`🚀 Mock服务器启动成功！`)
         console.log(`- 服务器地址: ${serverUrl}`)
         console.log(`- 完整路径: ${fullServerUrl}`)
         console.log(`- 健康检查: ${serverUrl}/health`)
-        console.log(`- API文档: ${docsUrl}`)
         console.log(`- 端口: ${port}`)
         console.log(`- 配置文件: ${fullConfigPath}`)
         console.log(`- 基础路径: ${config.baseUrl || '/'}`)

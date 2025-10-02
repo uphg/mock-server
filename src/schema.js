@@ -1,29 +1,29 @@
 export const mockConfigSchema = {
   type: 'object',
   properties: {
-    port: { 
-      type: 'number', 
+    port: {
+      type: 'number',
       default: 3000,
       description: 'Server listening port'
     },
-    baseUrl: { 
-      type: 'string', 
+    baseUrl: {
+      type: 'string',
       default: '',
       description: 'API base path prefix'
     },
-    delay: { 
-      type: 'number', 
-      default: 0, 
+    delay: {
+      type: 'number',
+      default: 0,
       minimum: 0,
       description: 'Global response delay (milliseconds)'
     },
-    cors: { 
-      type: 'boolean', 
+    cors: {
+      type: 'boolean',
       default: true,
       description: 'Whether to enable CORS support'
     },
-    mockDir: { 
-      type: 'string', 
+    mockDir: {
+      type: 'string',
       default: './data',
       description: 'Mock data directory'
     },
@@ -33,11 +33,11 @@ export const mockConfigSchema = {
       items: {
         type: 'object',
         properties: {
-          name: { 
+          name: {
             type: 'string',
             description: 'Default configuration name'
           },
-          description: { 
+          description: {
             type: 'string',
             description: 'Default configuration description'
           },
@@ -45,16 +45,16 @@ export const mockConfigSchema = {
             type: 'object',
             description: 'Default configuration items',
             properties: {
-              delay: { 
-                type: 'number', 
+              delay: {
+                type: 'number',
                 minimum: 0,
                 description: 'Route response delay (milliseconds)'
               },
-              headers: { 
+              headers: {
                 type: 'object',
                 description: 'Response headers configuration'
               },
-              statusCode: { 
+              statusCode: {
                 type: 'number',
                 description: 'HTTP status code'
               }
@@ -80,21 +80,21 @@ export const mockConfigSchema = {
       items: {
         type: 'object',
         properties: {
-          path: { 
+          path: {
             type: 'string',
             description: 'Route path, supports parameters like /users/:id'
           },
-          method: { 
-            type: 'string', 
-            enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
+          method: {
+            type: 'string',
+            enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
             default: 'GET',
             description: 'HTTP method'
           },
-          name: { 
+          name: {
             type: 'string',
             description: 'Route name'
           },
-          description: { 
+          description: {
             type: 'string',
             description: 'Route description'
           },
@@ -108,35 +108,35 @@ export const mockConfigSchema = {
               { type: 'boolean' }
             ]
           },
-           responseFile: {
-             type: 'string',
-             description: 'Response data file path (relative to mockDir)'
-           },
-           responseType: {
-             type: 'string',
-             enum: ['json', 'blob'],
-             default: 'json',
-             description: 'Response type: json for JSON responses, blob for file streams'
-           },
-           contentType: {
-             type: 'string',
-             description: 'Content-Type header for blob responses (auto-detected for common file types)'
-           },
-           fileName: {
-             type: 'string',
-             description: 'Download filename for blob responses (defaults to original filename)'
-           },
-           statusCode: {
-             type: 'number',
-             default: 200,
-             description: 'HTTP status code'
-           },
-          delay: { 
-            type: 'number', 
+          responseFile: {
+            type: 'string',
+            description: 'Response data file path (relative to mockDir)'
+          },
+          responseType: {
+            type: 'string',
+            enum: ['json', 'blob'],
+            default: 'json',
+            description: 'Response type: json for JSON responses, blob for file streams'
+          },
+          contentType: {
+            type: 'string',
+            description: 'Content-Type header for blob responses (auto-detected for common file types)'
+          },
+          fileName: {
+            type: 'string',
+            description: 'Download filename for blob responses (defaults to original filename)'
+          },
+          statusCode: {
+            type: 'number',
+            default: 200,
+            description: 'HTTP status code'
+          },
+          delay: {
+            type: 'number',
             default: 0,
             description: 'Route response delay (milliseconds)'
           },
-          headers: { 
+          headers: {
             type: 'object',
             description: 'Response headers configuration'
           }

@@ -1,11 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
-import merge from 'lodash.merge'
-import { mockConfigSchema } from './schema.js'
-import omit from 'lodash.omit'
-import { match } from 'path-to-regexp'
-import Database from 'better-sqlite3'
-import { parse } from 'csv/sync'
+import { applyRouteDefaults, validateConfig } from './utils/config.js'
+import { blobExtensions, getContentType } from './utils/type.js'
 
 export class ConfigLoader {
   constructor(configPath) {
@@ -17,59 +13,24 @@ export class ConfigLoader {
     try {
       const configContent = await fs.readFile(this.configPath, 'utf-8')
       const config = JSON.parse(configContent)
-      
+
       // 验证基础配置
-      this.validateConfig(config)
-      
+      validateConfig(config)
+
       // 处理响应文件导入
       await this.processResponseFiles(config)
-      
+
       // 应用路由默认配置
-      this.applyRouteDefaults(config)
-      
+      applyRouteDefaults(config)
+
       return config
     } catch (error) {
       throw new Error(`加载配置文件失败: ${error.message}`)
     }
   }
 
-  validateConfig(config) {
-    const { required } = mockConfigSchema
-    
-    // 检查必需字段
-    for (const field of required) {
-      if (!(field in config)) {
-        throw new Error(`配置缺少必需字段: ${field}`)
-      }
-    }
-
-    // 验证路由配置
-    if (!Array.isArray(config.routes)) {
-      throw new Error('routes 必须是数组')
-    }
-
-    for (const route of config.routes) {
-      this.validateRoute(route)
-    }
-  }
-
-  validateRoute(route) {
-    if (!route.path) {
-      throw new Error('路由配置必须包含 path 字段')
-    }
-
-    if (!route.response && !route.responseFile) {
-      throw new Error(`路由 ${route.path} 必须包含 response 或 responseFile 字段`)
-    }
-
-    if (route.method && !['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(route.method)) {
-      throw new Error(`路由 ${route.path} 的 method 必须是 GET, POST, PUT, DELETE, 或 PATCH`)
-    }
-  }
-
   async processResponseFiles(config) {
     const mockDir = config.mockDir || './data'
-    
     for (const route of config.routes) {
       if (route.responseFile) {
         const filePath = path.resolve(this.baseDir, mockDir, route.responseFile)
@@ -81,7 +42,7 @@ export class ConfigLoader {
           // 如果已经明确设置了 responseType 为 blob，保留 responseFile
           if (route.responseType === 'blob') {
             route.responseFilePath = filePath
-            route.contentType = route.contentType || this.getContentType(path.extname(filePath))
+            route.contentType = route.contentType || getContentType(path.extname(filePath))
             route.response = null // 文件流将在请求时处理
             continue // 继续处理下一个路由
           }
@@ -89,14 +50,11 @@ export class ConfigLoader {
           // 检查文件扩展名
           const ext = path.extname(filePath).toLowerCase()
 
-          // 自动检测 blob 文件类型
-          const blobExtensions = ['.xlsx', '.xls', '.docx', '.doc', '.pdf', '.zip', '.png', '.jpg', '.jpeg', '.gif', '.txt']
-
           if (blobExtensions.includes(ext)) {
             // Blob 文件类型
             route.responseType = 'blob'
             route.responseFilePath = filePath
-            route.contentType = route.contentType || this.getContentType(ext)
+            route.contentType = route.contentType || getContentType(ext)
             route.response = null // 文件流将在请求时处理
             // 对于 blob 文件，保留 responseFile 用于文件名处理
           } else if (ext === '.db') {
@@ -121,19 +79,19 @@ export class ConfigLoader {
             }
             delete route.responseFile
           }
-         } catch (error) {
-           if (error.code === 'ENOENT') {
-             throw new Error(`文件 ${route.responseFile} 不存在`)
-           }
-           throw error
-         }
-       }
-     }
-   }
+        } catch (error) {
+          if (error.code === 'ENOENT') {
+            throw new Error(`文件 ${route.responseFile} 不存在`)
+          }
+          throw error
+        }
+      }
+    }
+  }
 
   async watchConfig(onChange) {
     const chokidar = await import('chokidar')
-    
+
     // 获取配置来确定 mockDir
     let config
     try {
@@ -142,11 +100,11 @@ export class ConfigLoader {
     } catch {
       config = { mockDir: './data' }
     }
-    
+
     const mockDir = config.mockDir || './data'
-    
+
     const watcher = chokidar.watch([
-      this.configPath, 
+      this.configPath,
       path.join(this.baseDir, mockDir, '**/*.json')
     ], {
       ignored: /node_modules/,
@@ -164,267 +122,4 @@ export class ConfigLoader {
 
     return watcher
   }
-
-  /**
-   * 应用路由默认配置
-   * 优先级：路由显式配置 > 路由默认配置（defaults） > 全局默认配置
-   */
-  applyRouteDefaults(config) {
-    if (!config.routeDefaults || !Array.isArray(config.routeDefaults)) {
-      return
-    }
-
-    // 为每个路由应用匹配的默认配置
-    for (const route of config.routes) {
-      // 获取全局默认配置（除了 routes 和 routeDefaults）
-      const globalDefaults = this.extractGlobalDefaults(config)
-      
-      // 获取匹配的路由默认配置
-      const matchingDefaults = this.getMatchingRouteDefaults(route, config.routeDefaults)
-      
-      // 按优先级合并配置：全局默认 < 路由默认 < 路由显式配置
-      let mergedConfig = merge({}, globalDefaults)
-      
-      // 依次应用匹配的路由默认配置
-      for (const defaultConfig of matchingDefaults) {
-        mergedConfig = merge(mergedConfig, defaultConfig.config)
-      }
-      
-      // 最后应用路由的显式配置（优先级最高）
-      const routeExplicitConfig = omit(route, 'name', 'path', 'method', 'description')
-      
-      mergedConfig = merge(mergedConfig, routeExplicitConfig)
-      
-      // 将合并后的配置应用到路由（保留原有的 path, method, description）
-      Object.assign(route, mergedConfig)
-    }
-  }
-
-  /**
-   * 提取全局默认配置
-   */
-  extractGlobalDefaults(config) {
-    const globalDefaults = {}
-    
-    // 可以作为默认配置的全局字段
-    const globalDefaultFields = ['delay', 'headers', 'statusCode']
-    
-    for (const field of globalDefaultFields) {
-      if (config[field] !== undefined) {
-        globalDefaults[field] = config[field]
-      }
-    }
-    
-    return globalDefaults
-  }
-
-  /**
-   * 获取匹配指定路由的默认配置
-   */
-  getMatchingRouteDefaults(route, routeDefaults) {
-    const matchingDefaults = []
-    
-    for (const defaultConfig of routeDefaults) {
-      if (this.isRouteMatched(route, defaultConfig)) {
-        matchingDefaults.push(defaultConfig)
-      }
-    }
-    
-    return matchingDefaults
-  }
-
-  /**
-   * 检查路由是否匹配默认配置的条件
-   */
-  isRouteMatched(route, defaultConfig) {
-    const routePath = route.path
-    
-    // 检查 excludes 条件
-    if (defaultConfig.excludes && Array.isArray(defaultConfig.excludes)) {
-      for (const excludePattern of defaultConfig.excludes) {
-        if (this.matchPattern(routePath, excludePattern)) {
-          return false // 被排除
-        }
-      }
-    }
-    
-    // 检查 includes 条件
-    if (defaultConfig.includes && Array.isArray(defaultConfig.includes)) {
-      for (const includePattern of defaultConfig.includes) {
-        if (this.matchPattern(routePath, includePattern)) {
-          return true // 被包含
-        }
-      }
-      return false // 有 includes 但不匹配
-    }
-    
-    // 如果没有 includes 条件，且没有被 excludes 排除，则匹配
-    return true
-  }
-
-  /**
-   * 模式匹配（使用 path-to-regexp 库）
-   * 
-   * 支持以下模式：
-   * 
-   * 1. 参数匹配：
-   *    - /user/:id 匹配 /user/123, /user/abc 等
-   *    - /api/:version/users/:id 匹配 /api/v1/users/123 等
-   * 
-   * 2. 通配符匹配：
-   *    - /api/*path 匹配 /api/v1/users, /api/v2/posts/123 等
-   *    - * 匹配任意路径
-   *    - /files/*path 匹配 /files/docs/readme.txt 等
-   * 
-   * 3. 可选参数：
-   *    - /users{/:id}/delete 匹配 /users/delete 和 /users/123/delete
-   *    - /api{/:version} 匹配 /api 和 /api/v1
-   * 
-   * 4. 精确匹配：
-   *    - /api/users 只匹配 /api/users
-   * 
-   * 5. 向后兼容的简单通配符：
-   *    - /api/* 自动转换为 /api/*path
-   *    - * 自动转换为 /*path
-   * 
-   * @param {string} path - 要匹配的路径
-   * @param {string} pattern - 匹配模式
-   * @returns {boolean} 是否匹配
-   */
-  matchPattern(path, pattern) {
-    try {
-      // 处理简单的通配符模式（向后兼容）
-      if (pattern.includes('*') && !pattern.includes(':') && !pattern.includes('{')) {
-        // 如果是简单的通配符模式，转换为 path-to-regexp 格式
-        const convertedPattern = this.convertSimpleWildcard(pattern)
-        const matcher = match(convertedPattern, { decode: decodeURIComponent })
-        const result = matcher(path)
-        return result !== false
-      }
-      
-      // 使用 path-to-regexp 进行匹配
-      const matcher = match(pattern, { decode: decodeURIComponent })
-      const result = matcher(path)
-      return result !== false
-    } catch (error) {
-      // 如果 path-to-regexp 解析失败，回退到简单的字符串匹配
-      console.warn(`Pattern parsing failed for "${pattern}": ${error.message}. Falling back to exact match.`)
-      return path === pattern
-    }
-  }
-
-  /**
-   * 将简单的通配符模式转换为 path-to-regexp 格式
-   * 例如：/api/* -> /api/*path
-   *      * -> /*path
-   */
-  convertSimpleWildcard(pattern) {
-    // 如果模式只是 *，转换为 /*path
-    if (pattern === '*') {
-      return '/*path'
-    }
-    
-    // 将末尾的 * 替换为 *path
-    if (pattern.endsWith('*')) {
-      return pattern.replace(/\*$/, '*path')
-    }
-    
-    // 将中间的 * 替换为 *segment
-    return pattern.replace(/\*/g, '*segment')
-  }
-
-  /**
-   * 加载 SQLite 数据
-   * @param {string} filePath - SQLite 文件路径
-   * @param {object} route - 路由配置
-   * @returns {Promise<object>} 返回查询结果
-   */
-  async loadSQLiteData(filePath, route) {
-    try {
-      const db = new Database(filePath)
-      db.pragma('journal_mode = WAL')
-      
-      // 默认查询配置
-      const queryConfig = route.sqliteQuery || {
-        table: 'data',
-        limit: 100
-      }
-      
-      let query
-      let params = []
-      
-      if (queryConfig.query) {
-        // 使用自定义查询
-        query = queryConfig.query
-        params = queryConfig.params || []
-      } else {
-        // 构建默认查询
-        const table = queryConfig.table || 'data'
-        const limit = queryConfig.limit || 100
-        const where = queryConfig.where || ''
-        
-        query = `SELECT * FROM ${table}`
-        if (where) {
-          query += ` WHERE ${where}`
-        }
-        query += ` LIMIT ${limit}`
-      }
-      
-      const stmt = db.prepare(query)
-      const result = stmt.all(...params)
-      
-      db.close()
-      
-      return result
-    } catch (error) {
-      throw new Error(`SQLite 查询失败: ${error.message}`)
-    }
-  }
-
-  /**
-    * 加载 CSV 数据
-    * @param {string} filePath - CSV 文件路径
-    * @param {object} route - 路由配置
-    * @returns {Promise<object>} 返回解析后的数据
-    */
-   async loadCSVData(filePath, route) {
-     try {
-       const fileContent = await fs.readFile(filePath, 'utf-8')
-
-       // CSV 解析配置
-       const csvConfig = route.csvConfig || {
-         columns: true,
-         skip_empty_lines: true
-       }
-
-       const records = parse(fileContent, csvConfig)
-
-       return records
-     } catch (error) {
-       throw new Error(`CSV 解析失败: ${error.message}`)
-     }
-   }
-
-   /**
-    * 根据文件扩展名获取 MIME 类型
-    * @param {string} ext - 文件扩展名（包含点号，如 .xlsx）
-    * @returns {string} MIME 类型
-    */
-   getContentType(ext) {
-     const mimeTypes = {
-       '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-       '.xls': 'application/vnd.ms-excel',
-       '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-       '.doc': 'application/msword',
-       '.pdf': 'application/pdf',
-       '.zip': 'application/zip',
-       '.png': 'image/png',
-       '.jpg': 'image/jpeg',
-       '.jpeg': 'image/jpeg',
-       '.gif': 'image/gif',
-       '.txt': 'text/plain'
-     }
-
-     return mimeTypes[ext.toLowerCase()] || 'application/octet-stream'
-   }
- }
+}

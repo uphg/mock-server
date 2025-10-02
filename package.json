@@ -1,6 +1,6 @@
 {
   "name": "mockfly",
-  "version": "0.1.0-alpha.6",
+  "version": "0.1.0-alpha.7",
   "description": "Automatically generate mock data routing services based on configuration files",
   "main": "src/index.js",
   "type": "module",

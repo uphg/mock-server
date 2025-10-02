@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import path from 'path'
-import { ConfigLoader } from './config-loader.js'
-import { DocsGenerator } from './docs-generator.js'
+import { ConfigLoader } from './config-loader'
+import { DocsGenerator } from './docs-generator'
 
 /**
  * 生成API接口文档
