@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { applyRouteDefaults, validateConfig } from './utils/config.js'
 import { blobExtensions, getContentType } from './utils/type.js'
+import { pluginManager } from './plugins/plugin-manager.js'
 
 export class ConfigLoader {
   constructor(configPath) {
@@ -50,34 +51,31 @@ export class ConfigLoader {
           // 检查文件扩展名
           const ext = path.extname(filePath).toLowerCase()
 
-          if (blobExtensions.includes(ext)) {
-            // Blob 文件类型
+          if (blobExtensions.includes(ext) && ext !== '.json') {
+            // Blob 文件类型（排除 JSON 文件）
             route.responseType = 'blob'
             route.responseFilePath = filePath
             route.contentType = route.contentType || getContentType(ext)
             route.response = null // 文件流将在请求时处理
             // 对于 blob 文件，保留 responseFile 用于文件名处理
-          } else if (ext === '.db') {
-            // SQLite 数据库文件
-            route.responseFileType = 'sqlite'
-            route.responseFilePath = filePath
-            route.response = null // 将在请求时动态加载
-            delete route.responseFile
-          } else if (ext === '.csv') {
-            // CSV 文件
-            route.responseFileType = 'csv'
-            route.responseFilePath = filePath
-            route.response = null // 将在请求时动态加载
-            delete route.responseFile
           } else {
-            // 其他文件类型，尝试作为 JSON 解析
-            const fileContent = await fs.readFile(filePath, 'utf-8')
-            try {
-              route.response = JSON.parse(fileContent)
-            } catch {
-              throw new Error(`文件 ${route.responseFile} 不是有效的 JSON 格式`)
+            // 检查插件是否支持此文件类型
+            const plugin = pluginManager.getPluginForExtension(ext)
+            if (plugin) {
+              route.responseFileType = plugin.name
+              route.responseFilePath = filePath
+              route.response = null // 将在请求时动态加载
+              delete route.responseFile
+            } else {
+              // 其他文件类型，尝试作为 JSON 解析
+              const fileContent = await fs.readFile(filePath, 'utf-8')
+              try {
+                route.response = JSON.parse(fileContent)
+              } catch {
+                throw new Error(`文件 ${route.responseFile} 不是有效的 JSON 格式`)
+              }
+              delete route.responseFile
             }
-            delete route.responseFile
           }
         } catch (error) {
           if (error.code === 'ENOENT') {

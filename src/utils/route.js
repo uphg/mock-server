@@ -1,10 +1,9 @@
 import Handlebars from 'handlebars'
-import Database from 'better-sqlite3'
-import { parse } from 'csv/sync'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
 import path from 'path'
 import { getContentType } from './type.js'
+import { pluginManager } from '../plugins/plugin-manager.js'
 
 export function createHandler(route, globalConfig) {
   return async (req, res) => {
@@ -67,10 +66,9 @@ export function createHandler(route, globalConfig) {
       } else {
         // 处理动态响应
         let response
-        if (route.responseFileType === 'sqlite') {
-          response = await loadSQLiteData(route, req)
-        } else if (route.responseFileType === 'csv') {
-          response = await loadCSVData(route, req)
+        if (route.responseFileType) {
+          // 使用插件系统加载数据
+          response = await pluginManager.loadData(route, req)
         } else {
           response = processResponse(route.response, req)
         }
@@ -181,77 +179,3 @@ export function tryParseValue(value) {
   return value
 }
 
-/**
- * 动态加载 CSV 数据
- * @param {object} route - 路由配置
- * @param {object} req - 请求对象
- * @returns {Promise<object>} 返回解析后的数据
- */
-export async function loadCSVData(route, req) {
-  try {
-    const fileContent = await fs.readFile(route.responseFilePath, 'utf-8')
-
-    // CSV 解析配置
-    const csvConfig = route.csvConfig || {
-      columns: true,
-      skip_empty_lines: true
-    }
-
-    const records = parse(fileContent, csvConfig)
-
-    return records
-  } catch (error) {
-    throw new Error(`CSV 解析失败: ${error.message}`)
-  }
-}
-
-/**
- * 动态加载 SQLite 数据
- * @param {object} route - 路由配置
- * @param {object} req - 请求对象
- * @returns {Promise<object>} 返回查询结果
- */
-export async function loadSQLiteData(route, req) {
-  try {
-    const db = new Database(route.responseFilePath)
-    db.pragma('journal_mode = WAL')
-
-    // 默认查询配置
-    const queryConfig = route.sqliteQuery || {
-      table: 'data',
-      limit: 100
-    }
-
-    let query
-    let params = []
-
-    if (queryConfig.query) {
-      // 使用自定义查询
-      query = queryConfig.query
-      // 处理参数中的模板变量
-      if (queryConfig.params) {
-        params = queryConfig.params.map(param => processTemplate(param, req))
-      }
-    } else {
-      // 构建默认查询
-      const table = queryConfig.table || 'data'
-      const limit = queryConfig.limit || 100
-      const where = queryConfig.where || ''
-
-      query = `SELECT * FROM ${table}`
-      if (where) {
-        query += ` WHERE ${where}`
-      }
-      query += ` LIMIT ${limit}`
-    }
-
-    const stmt = db.prepare(query)
-    const result = stmt.all(...params)
-
-    db.close()
-
-    return result
-  } catch (error) {
-    throw new Error(`SQLite 查询失败: ${error.message}`)
-  }
-}

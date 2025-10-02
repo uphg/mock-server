@@ -1,0 +1,24 @@
+{
+  "name": "@mockfly/sqlite-plugin",
+  "version": "1.0.0",
+  "description": "SQLite plugin for Mockfly - enables SQLite database file support",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "mockfly",
+    "plugin",
+    "sqlite",
+    "database"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.2.0"
+  },
+  "peerDependencies": {
+    "mockfly": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

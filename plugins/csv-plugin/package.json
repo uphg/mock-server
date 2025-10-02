@@ -1,0 +1,24 @@
+{
+  "name": "@mockfly/csv-plugin",
+  "version": "1.0.0",
+  "description": "CSV plugin for Mockfly - enables CSV file support",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "mockfly",
+    "plugin",
+    "csv",
+    "data"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "csv": "^6.4.1"
+  },
+  "peerDependencies": {
+    "mockfly": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

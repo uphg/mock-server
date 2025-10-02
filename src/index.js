@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 import { ConfigLoader } from './config-loader.js'
 import { RouteGenerator } from './route-generator.js'
 import { DocsGenerator } from './docs-generator.js'
+import { pluginManager } from './plugins/plugin-manager.js'
 import net from 'net'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -54,6 +55,39 @@ class MockServer {
     return null
   }
 
+  async loadPlugins(config) {
+    // 自动加载内置插件（如果存在）
+    try {
+      // 尝试加载SQLite插件
+      const { default: sqlitePlugin } = await import('../plugins/sqlite-plugin/index.js')
+      pluginManager.register(sqlitePlugin)
+    } catch (error) {
+      // SQLite插件不可用，跳过
+      console.log('ℹ️  SQLite plugin not available')
+    }
+
+    try {
+      // 尝试加载CSV插件
+      const { default: csvPlugin } = await import('../plugins/csv-plugin/index.js')
+      pluginManager.register(csvPlugin)
+    } catch (error) {
+      // CSV插件不可用，跳过
+      console.log('ℹ️  CSV plugin not available')
+    }
+
+    // TODO: 支持从配置中加载外部插件
+    if (config.plugins && Array.isArray(config.plugins)) {
+      for (const pluginName of config.plugins) {
+        try {
+          const pluginModule = await import(pluginName)
+          pluginManager.register(pluginModule.default)
+        } catch (error) {
+          console.warn(`⚠️  Failed to load plugin ${pluginName}:`, error.message)
+        }
+      }
+    }
+  }
+
   async start(configPath = './mock/mock.config.json', options = {}) {
     try {
       // 初始化配置加载器
@@ -62,7 +96,10 @@ class MockServer {
       
       // 加载配置
       const config = await this.configLoader.loadConfig()
-      
+
+      // 加载插件
+      await this.loadPlugins(config)
+
       // 设置Express中间件
       this.setupMiddleware(config)
       
