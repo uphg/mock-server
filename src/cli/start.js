@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 
 export async function startCommand(options) {
   const configPath = path.resolve(options.config)
-  
+
   // Check if config file exists
   if (!fs.existsSync(configPath)) {
     console.error('❌ Configuration file not found:', configPath)
@@ -15,7 +15,7 @@ export async function startCommand(options) {
 
   console.log('🚀 Starting mock server...')
   console.log('📄 Config:', configPath)
-  
+
   if (options.port) {
     console.log('🔌 Port:', options.port)
   }
@@ -24,11 +24,15 @@ export async function startCommand(options) {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
   const indexPath = path.resolve(__dirname, '../index.js')
-  
+
   const args = [indexPath, configPath]
-  
+
   if (options.port) {
     args.push('--port', options.port)
+  }
+
+  if (options.verbose) {
+    args.push('--verbose')
   }
 
   const nodeArgs = options.dev ? ['--watch', ...args] : args

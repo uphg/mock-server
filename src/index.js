@@ -54,7 +54,7 @@ class MockServer {
     return null
   }
 
-  async start(configPath = './mock.config.json') {
+  async start(configPath = './mock.config.json', options = {}) {
     try {
       // 初始化配置加载器
       const fullConfigPath = path.resolve(process.cwd(), configPath)
@@ -92,36 +92,42 @@ class MockServer {
         }
       }
       
-      this.server = this.app.listen(port, () => {
-        const serverUrl = `http://${host}:${port}`
-        const baseUrl = config.baseUrl || '/'
-        
-        // 修复URL拼接逻辑
-        let fullServerUrl = serverUrl
-        if (baseUrl !== '/') {
-          if (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) {
-            // baseUrl是完整URL，直接使用
-            fullServerUrl = baseUrl
-          } else {
-            // baseUrl是路径，确保以/开头并拼接到serverUrl后面
-            const normalizedBaseUrl = baseUrl.startsWith('/') ? baseUrl : `/${baseUrl}`
-            fullServerUrl = `${serverUrl}${normalizedBaseUrl}`
-          }
-        }
-        
-        console.log(`🚀 Mock服务器启动成功！`)
-        console.log(`- 服务器地址: ${serverUrl}`)
-        console.log(`- 完整路径: ${fullServerUrl}`)
-        console.log(`- 健康检查: ${serverUrl}/health`)
-        console.log(`- 端口: ${port}`)
-        console.log(`- 配置文件: ${fullConfigPath}`)
-        console.log(`- 基础路径: ${config.baseUrl || '/'}`)
-        console.log(`- 全局延迟: ${config.delay || 0}ms`)
-        console.log(`- CORS: ${config.cors !== false ? '启用' : '禁用'}`)
-        console.log(`- Mock目录: ${config.mockDir || './data'}`)
-        console.log('')
-        this.routeGenerator.printRoutes()
-      })
+       this.server = this.app.listen(port, () => {
+         const serverUrl = `http://${host}:${port}`
+         const baseUrl = config.baseUrl || '/'
+
+         // 修复URL拼接逻辑
+         let fullServerUrl = serverUrl
+         if (baseUrl !== '/') {
+           if (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) {
+             // baseUrl是完整URL，直接使用
+             fullServerUrl = baseUrl
+           } else {
+             // baseUrl是路径，确保以/开头并拼接到serverUrl后面
+             const normalizedBaseUrl = baseUrl.startsWith('/') ? baseUrl : `/${baseUrl}`
+             fullServerUrl = `${serverUrl}${normalizedBaseUrl}`
+           }
+         }
+
+         console.log(`🚀 Mock服务器启动成功！`)
+         console.log(`- 完整路径: ${fullServerUrl}`)
+         console.log('')
+
+         // 如果启用 verbose 模式，打印详细信息
+         if (options.verbose) {
+           console.log(`- 服务器地址: ${serverUrl}`)
+           console.log(`- 健康检查: ${serverUrl}/health`)
+           console.log(`- 端口: ${port}`)
+           console.log(`- 配置文件: ${fullConfigPath}`)
+           console.log(`- 基础路径: ${config.baseUrl || '/'}`)
+           console.log(`- 全局延迟: ${config.delay || 0}ms`)
+           console.log(`- CORS: ${config.cors !== false ? '启用' : '禁用'}`)
+           console.log(`- Mock目录: ${config.mockDir || './data'}`)
+           console.log('')
+         }
+
+         this.routeGenerator.printRoutes()
+       })
       
       // 设置配置文件热更新
       if (process.env.NODE_ENV !== 'production') {
@@ -224,8 +230,9 @@ class MockServer {
 // 命令行启动
 if (import.meta.url === `file://${process.argv[1]}`) {
   const configPath = process.argv[2] || './mock.config.json'
+  const verbose = process.argv.includes('--verbose')
   const server = new MockServer()
-  server.start(configPath)
+  server.start(configPath, { verbose })
 }
 
 export { MockServer }

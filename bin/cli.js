@@ -22,6 +22,7 @@ program
   .option('-c, --config <config>', 'Configuration file path', 'mock.config.json')
   .option('-p, --port <port>', 'Server port')
   .option('--dev', 'Development mode with hot reload')
+  .option('--verbose', 'Show detailed server information')
   .action(startCommand)
 
 program
