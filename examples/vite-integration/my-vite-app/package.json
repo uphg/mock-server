@@ -1,0 +1,21 @@
+{
+  "name": "my-vite-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "mock": "mockfly start",
+    "mock:docs": "mockfly docs --dev"
+  },
+  "dependencies": {
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "vite": "^5.0.0",
+    "mockfly": "file:../../.."
+  }
+}

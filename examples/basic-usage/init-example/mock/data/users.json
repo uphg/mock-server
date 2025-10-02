@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Zhang San",
+    "email": "zhangsan@example.com",
+    "age": 28,
+    "city": "Beijing"
+  },
+  {
+    "id": 2,
+    "name": "Li Si",
+    "email": "lisi@example.com",
+    "age": 32,
+    "city": "Shanghai"
+  },
+  {
+    "id": 3,
+    "name": "Wang Wu",
+    "email": "wangwu@example.com",
+    "age": 25,
+    "city": "Guangzhou"
+  }
+]

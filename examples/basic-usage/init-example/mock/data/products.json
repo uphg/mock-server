@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "iPhone 15",
+    "price": 5999,
+    "category": "Smartphone",
+    "stock": 100
+  },
+  {
+    "id": 2,
+    "name": "MacBook Pro",
+    "price": 12999,
+    "category": "Laptop",
+    "stock": 50
+  },
+  {
+    "id": 3,
+    "name": "AirPods Pro",
+    "price": 1999,
+    "category": "Earphones",
+    "stock": 200
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "iPhone 15",
+    "price": 5999,
+    "category": "Smartphone",
+    "description": "Latest iPhone model with A17 chip and 5G support",
+    "specs": {
+      "screen": "6.1 inches",
+      "storage": "128GB",
+      "color": "Midnight"
+    },
+    "stock": 100,
+    "reviews": [
+      {
+        "userId": 1,
+        "rating": 5,
+        "comment": "Very easy to use, great camera quality!"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "MacBook Pro",
+    "price": 12999,
+    "category": "Laptop",
+    "description": "Professional laptop with M3 chip",
+    "specs": {
+      "screen": "14 inches",
+      "memory": "16GB",
+      "storage": "512GB SSD"
+    },
+    "stock": 50,
+    "reviews": [
+      {
+        "userId": 2,
+        "rating": 4,
+        "comment": "Powerful performance, but relatively expensive"
+      }
+    ]
+  }
+]
