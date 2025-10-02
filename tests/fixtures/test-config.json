@@ -3,7 +3,7 @@
   "baseUrl": "/api",
   "delay": 0,
   "cors": true,
-  "mockDir": "./data",
+  "mockDir": "./mock/data",
   "routes": [
     {
       "path": "/api/test-users",

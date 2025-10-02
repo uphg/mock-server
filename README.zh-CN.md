@@ -108,7 +108,7 @@ pnpm start custom.config.json
   "baseUrl": "/api",
   "delay": 0,
   "cors": true,
-  "mockDir": "./data",
+  "mockDir": "./mock/data",
   "routes": [
     {
       "name": "获取用户列表",
@@ -129,7 +129,7 @@ pnpm start custom.config.json
 | `baseUrl` | string | / | API 基础路径 |
 | `delay` | number | 0 | 全局响应延迟（毫秒） |
 | `cors` | boolean | true | 是否启用 CORS |
-| `mockDir` | string | ./data | Mock 数据文件目录 |
+| `mockDir` | string | ./mock/data | Mock 数据文件目录 |
 
 ## 🛣️ 路由配置
 

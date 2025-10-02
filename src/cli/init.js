@@ -4,7 +4,7 @@ import path from 'path'
 const SAMPLE_CONFIG = {
   "port": 3000,
   "baseUrl": "http://localhost:3000",
-  "mockDir": "./data",
+  "mockDir": "./mock/data",
   "cors": {
     "origin": "*",
     "credentials": true
@@ -149,8 +149,9 @@ const SAMPLE_PRODUCT_DETAIL = [
 
 export async function initCommand(options) {
   const targetDir = path.resolve(options.dir)
-  const dataDir = path.join(targetDir, 'data')
-  const configPath = path.join(targetDir, 'mock.config.json')
+  const mockDir = path.join(targetDir, 'mock')
+  const dataDir = path.join(mockDir, 'data')
+  const configPath = path.join(mockDir, 'mock.config.json')
 
   console.log('🚀 Initializing mock server...')
 

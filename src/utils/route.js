@@ -29,7 +29,7 @@ export function createHandler(route, globalConfig) {
 
       if (responseType === 'blob') {
         // 处理文件流响应
-        const mockDir = globalConfig.mockDir || './data'
+        const mockDir = globalConfig.mockDir || './mock/data'
         const filePath = path.resolve(mockDir, route.responseFile)
         const fileName = route.fileName || path.basename(route.responseFile)
 

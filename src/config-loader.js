@@ -30,7 +30,7 @@ export class ConfigLoader {
   }
 
   async processResponseFiles(config) {
-    const mockDir = config.mockDir || './data'
+    const mockDir = config.mockDir || './mock/data'
     for (const route of config.routes) {
       if (route.responseFile) {
         const filePath = path.resolve(this.baseDir, mockDir, route.responseFile)
@@ -98,10 +98,10 @@ export class ConfigLoader {
       const configContent = await fs.readFile(this.configPath, 'utf-8')
       config = JSON.parse(configContent)
     } catch {
-      config = { mockDir: './data' }
+      config = { mockDir: './mock/data' }
     }
 
-    const mockDir = config.mockDir || './data'
+    const mockDir = config.mockDir || './mock/data'
 
     const watcher = chokidar.watch([
       this.configPath,

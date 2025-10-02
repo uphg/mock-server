@@ -19,7 +19,7 @@ program
 program
   .command('start')
   .description('Start the mock server')
-  .option('-c, --config <config>', 'Configuration file path', 'mock.config.json')
+  .option('-c, --config <config>', 'Configuration file path', './mock/mock.config.json')
   .option('-p, --port <port>', 'Server port')
   .option('--dev', 'Development mode with hot reload')
   .option('--verbose', 'Show detailed server information')
@@ -28,7 +28,7 @@ program
 program
   .command('docs')
   .description('Generate API documentation')
-  .option('-c, --config <config>', 'Configuration file path', 'mock.config.json')
+  .option('-c, --config <config>', 'Configuration file path', './mock/mock.config.json')
   .option('-o, --output <output>', 'Documentation output directory', 'docs')
   .option('--dev', 'Start documentation dev server')
   .option('--build', 'Build static documentation')

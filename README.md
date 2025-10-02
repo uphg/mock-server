@@ -108,7 +108,7 @@ Create a `mock.config.json` file:
   "baseUrl": "/api",
   "delay": 0,
   "cors": true,
-  "mockDir": "./data",
+  "mockDir": "./mock/data",
   "routes": [
     {
       "name": "Get user list",
@@ -129,7 +129,7 @@ Create a `mock.config.json` file:
 | `baseUrl` | string | / | API base path |
 | `delay` | number | 0 | Global response delay (milliseconds) |
 | `cors` | boolean | true | Whether to enable CORS |
-| `mockDir` | string | ./data | Mock data file directory |
+| `mockDir` | string | ./mock/data | Mock data file directory |
 
 ## 🛣️ Route Configuration
 

@@ -54,7 +54,7 @@ class MockServer {
     return null
   }
 
-  async start(configPath = './mock.config.json', options = {}) {
+  async start(configPath = './mock/mock.config.json', options = {}) {
     try {
       // 初始化配置加载器
       const fullConfigPath = path.resolve(process.cwd(), configPath)
@@ -122,7 +122,7 @@ class MockServer {
            console.log(`- 基础路径: ${config.baseUrl || '/'}`)
            console.log(`- 全局延迟: ${config.delay || 0}ms`)
            console.log(`- CORS: ${config.cors !== false ? '启用' : '禁用'}`)
-           console.log(`- Mock目录: ${config.mockDir || './data'}`)
+           console.log(`- Mock目录: ${config.mockDir || './mock/data'}`)
            console.log('')
          }
 
@@ -229,7 +229,7 @@ class MockServer {
 
 // 命令行启动
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const configPath = process.argv[2] || './mock.config.json'
+  const configPath = process.argv[2] || './mock/mock.config.json'
   const verbose = process.argv.includes('--verbose')
   const server = new MockServer()
   server.start(configPath, { verbose })

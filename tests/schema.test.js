@@ -104,7 +104,7 @@ describe('Schema Validation', () => {
     assert.strictEqual(properties.baseUrl.default, '')
     assert.strictEqual(properties.delay.default, 0)
     assert.strictEqual(properties.cors.default, true)
-    assert.strictEqual(properties.mockDir.default, './data')
+    assert.strictEqual(properties.mockDir.default, './mock/data')
     
     // 检查路由默认值
     assert.strictEqual(routeProperties.method.default, 'GET')

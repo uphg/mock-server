@@ -12,7 +12,7 @@ async function generateDocs() {
     console.log('🚀 开始生成API接口文档...')
     
     // 获取配置文件路径
-    const configPath = process.argv[2] || './mock.config.json'
+    const configPath = process.argv[2] || './mock/mock.config.json'
     const fullConfigPath = path.resolve(process.cwd(), configPath)
     
     console.log(`📖 读取配置文件: ${fullConfigPath}`)
