@@ -2,8 +2,9 @@ import { spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import { logger } from '../utils/logger.js'
 
-export async function startCommand(options) {
+export async function startCommand(options, globalOptions = {}) {
   const configPath = path.resolve(options.config)
 
   // Check if config file exists
@@ -33,6 +34,10 @@ export async function startCommand(options) {
 
   if (options.verbose) {
     args.push('--verbose')
+  }
+
+  if (globalOptions.log) {
+    args.push('--log')
   }
 
   const nodeArgs = options.dev ? ['--watch', ...args] : args

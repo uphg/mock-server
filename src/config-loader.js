@@ -3,6 +3,7 @@ import path from 'path'
 import { applyRouteDefaults, validateConfig } from './utils/config.js'
 import { blobExtensions, getContentType } from './utils/type.js'
 import { pluginManager } from './plugins/plugin-manager.js'
+import { logger } from './utils/logger.js'
 
 export class ConfigLoader {
   constructor(configPath) {
@@ -114,7 +115,7 @@ export class ConfigLoader {
         const newConfig = await this.loadConfig()
         onChange(newConfig)
       } catch (error) {
-        console.error('配置文件热更新失败:', error.message)
+        logger.error('SERVER', `配置文件热更新失败: ${error.message}`)
       }
     })
 

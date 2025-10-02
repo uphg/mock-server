@@ -1,6 +1,6 @@
 {
   "name": "@mockfly/csv-plugin",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "CSV plugin for Mockfly - enables CSV file support",
   "main": "index.js",
   "type": "module",

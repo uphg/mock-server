@@ -1,0 +1,54 @@
+{
+  "port": 3000,
+  "baseUrl": "/",
+  "mockDir": "./mock/data",
+  "cors": {
+    "origin": "*",
+    "credentials": true
+  },
+  "routes": [
+    {
+      "path": "/api/users",
+      "method": "GET",
+      "response": {
+        "data": "{{file:users.json}}"
+      }
+    },
+    {
+      "path": "/api/users/:id",
+      "method": "GET",
+      "response": {
+        "data": "{{file:users.json}}",
+        "filter": "id === {{params.id}}"
+      }
+    },
+    {
+      "path": "/api/products",
+      "method": "GET",
+      "response": {
+        "data": "{{file:products.json}}"
+      }
+    },
+    {
+      "path": "/api/products/:id",
+      "method": "GET",
+      "response": {
+        "data": "{{file:product-detail.json}}",
+        "filter": "id === {{params.id}}"
+      }
+    },
+    {
+      "path": "/api/products",
+      "method": "POST",
+      "response": {
+        "status": 201,
+        "data": {
+          "id": "{{random.uuid}}",
+          "name": "{{body.name}}",
+          "price": "{{body.price}}",
+          "createdAt": "{{date.now}}"
+        }
+      }
+    }
+  ]
+}

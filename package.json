@@ -1,6 +1,6 @@
 {
   "name": "mockfly",
-  "version": "0.1.0-alpha.7",
+  "version": "1.0.0-alpha.1",
   "description": "Automatically generate mock data routing services based on configuration files",
   "main": "src/index.js",
   "type": "module",
@@ -39,7 +39,8 @@
     "mdast-builder": "^1.1.1",
     "mdast-util-gfm-table": "^2.0.0",
     "mdast-util-to-markdown": "^2.1.2",
-    "path-to-regexp": "^8.2.0"
+    "path-to-regexp": "^8.2.0",
+    "picocolors": "^1.0.0"
   },
   "devDependencies": {
     "chokidar": "^4.0.3",

@@ -24,7 +24,7 @@ export const mockConfigSchema = {
     },
     mockDir: {
       type: 'string',
-      default: './data',
+      default: './mock/data',
       description: 'Mock data directory'
     },
     routeDefaults: {

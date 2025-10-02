@@ -1,0 +1,49 @@
+🚀 Starting mock server...
+📄 Config: /home/uphg/projects/mock-server/mock/mock.config.json
+[2025-10-02T06:47:54.642Z] INFO  PLUGIN   - SQLite plugin not available
+[2025-10-02T06:47:54.644Z] INFO  PLUGIN   - CSV plugin not available
+[2025-10-02T06:47:54.646Z] INFO  ROUTER   - 注册路由: GET http://localhost:3000/api/users (无描述)
+[2025-10-02T06:47:54.646Z] INFO  ROUTER   - 注册路由: GET http://localhost:3000/api/users/:id (无描述)
+[2025-10-02T06:47:54.646Z] INFO  ROUTER   - 注册路由: GET http://localhost:3000/api/products (无描述)
+[2025-10-02T06:47:54.646Z] INFO  ROUTER   - 注册路由: GET http://localhost:3000/api/products/:id (无描述)
+[2025-10-02T06:47:54.646Z] INFO  ROUTER   - 注册路由: POST http://localhost:3000/api/products (无描述)
+[2025-10-02T06:47:54.659Z] INFO  DOCS     - 跳过未变更文档: get-api-users-id.md
+[2025-10-02T06:47:54.659Z] INFO  DOCS     - 跳过未变更文档: get-api-users.md
+[2025-10-02T06:47:54.660Z] INFO  DOCS     - 跳过未变更文档: get-api-products.md
+[2025-10-02T06:47:54.660Z] INFO  DOCS     - 跳过未变更文档: get-api-products-id.md
+[2025-10-02T06:47:54.660Z] INFO  DOCS     - 跳过未变更文档: post-api-products.md
+[2025-10-02T06:47:54.664Z] INFO  DOCS     - 生成总览文档: README.md
+[2025-10-02T06:47:54.664Z] SUCCESS DOCS     - 文档生成完成: 生成6个文件 (目录: docs/api)
+[2025-10-02T06:47:54.664Z] SUCCESS DOCS     - API文档生成完成
+[2025-10-02T06:47:54.666Z] WARN  SERVER   - 端口 3000 已被占用，正在查找可用端口...
+[2025-10-02T06:47:54.666Z] INFO  SERVER   - 找到可用端口: 3003
+[2025-10-02T06:47:54.669Z] SUCCESS SERVER   - Mock服务器启动成功: http://localhost:3000
+[2025-10-02T06:47:54.669Z] INFO  ROUTER   - 激活路由列表:
+[2025-10-02T06:47:54.669Z] INFO  ROUTER   -   GET http://localhost:3000/api/users
+[2025-10-02T06:47:54.669Z] INFO  ROUTER   -   GET http://localhost:3000/api/users/:id
+[2025-10-02T06:47:54.669Z] INFO  ROUTER   -   GET http://localhost:3000/api/products
+[2025-10-02T06:47:54.669Z] INFO  ROUTER   -   GET http://localhost:3000/api/products/:id
+[2025-10-02T06:47:54.669Z] INFO  ROUTER   -   POST http://localhost:3000/api/products
+[2025-10-02T06:47:54.671Z] INFO  SERVER   - 配置文件热更新已启用
+[2025-10-02T06:47:56.493Z] DEBUG REQUEST  - GET /api/users [404] 2ms
+[2025-10-02T06:48:04.436Z] INFO  SERVER   - 检测到配置变更，重新加载...
+[2025-10-02T06:48:04.436Z] INFO  ROUTER   - 注册路由: GET /api/users (无描述)
+[2025-10-02T06:48:04.436Z] INFO  ROUTER   - 注册路由: GET /api/users/:id (无描述)
+[2025-10-02T06:48:04.437Z] INFO  ROUTER   - 注册路由: GET /api/products (无描述)
+[2025-10-02T06:48:04.437Z] INFO  ROUTER   - 注册路由: GET /api/products/:id (无描述)
+[2025-10-02T06:48:04.437Z] INFO  ROUTER   - 注册路由: POST /api/products (无描述)
+[2025-10-02T06:48:04.442Z] INFO  DOCS     - 生成文档: get-api-users.md
+[2025-10-02T06:48:04.442Z] INFO  DOCS     - 生成文档: get-api-users-id.md
+[2025-10-02T06:48:04.442Z] INFO  DOCS     - 生成文档: get-api-products.md
+[2025-10-02T06:48:04.442Z] INFO  DOCS     - 生成文档: get-api-products-id.md
+[2025-10-02T06:48:04.442Z] INFO  DOCS     - 生成文档: post-api-products.md
+[2025-10-02T06:48:04.443Z] INFO  DOCS     - 生成总览文档: README.md
+[2025-10-02T06:48:04.443Z] SUCCESS DOCS     - 文档生成完成: 生成6个文件 (目录: docs/api)
+[2025-10-02T06:48:04.443Z] SUCCESS DOCS     - API文档生成完成
+[2025-10-02T06:48:04.443Z] SUCCESS SERVER   - 配置热更新完成
+[2025-10-02T06:48:04.443Z] INFO  ROUTER   - 激活路由列表:
+[2025-10-02T06:48:04.443Z] INFO  ROUTER   -   GET /api/users
+[2025-10-02T06:48:04.443Z] INFO  ROUTER   -   GET /api/users/:id
+[2025-10-02T06:48:04.443Z] INFO  ROUTER   -   GET /api/products
+[2025-10-02T06:48:04.443Z] INFO  ROUTER   -   GET /api/products/:id
+[2025-10-02T06:48:04.443Z] INFO  ROUTER   -   POST /api/products

@@ -1,4 +1,5 @@
 import { MockPlugin } from './plugin-interface.js'
+import { logger } from '../utils/logger.js'
 
 /**
  * Plugin Manager for Mockfly
@@ -26,7 +27,7 @@ export class PluginManager {
       this.extensions.set(ext.toLowerCase(), plugin.name)
     }
 
-    console.log(`✅ Plugin registered: ${plugin.name} v${plugin.version}`)
+    logger.info('PLUGIN', `注册插件: ${plugin.name} v${plugin.version}`)
   }
 
   /**

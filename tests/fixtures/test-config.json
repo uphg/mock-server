@@ -1,9 +1,9 @@
 {
-  "port": 3002,
+  "port": 3008,
   "baseUrl": "/api",
   "delay": 0,
   "cors": true,
-  "mockDir": "./mock/data",
+  "mockDir": "./data",
   "routes": [
     {
       "path": "/api/test-users",

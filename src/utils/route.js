@@ -4,6 +4,7 @@ import fsPromises from 'fs/promises'
 import path from 'path'
 import { getContentType } from './type.js'
 import { pluginManager } from '../plugins/plugin-manager.js'
+import { logger } from './logger.js'
 
 export function createHandler(route, globalConfig) {
   return async (req, res) => {
@@ -54,7 +55,7 @@ export function createHandler(route, globalConfig) {
 
         // 处理流错误
         fileStream.on('error', (error) => {
-          console.error(`文件流错误 ${route.path}:`, error)
+          logger.error('SERVER', `文件流错误 ${route.path}: ${error.message}`)
           if (!res.headersSent) {
             res.status(500).json({
               error: 'Internal Server Error',
@@ -78,7 +79,7 @@ export function createHandler(route, globalConfig) {
       }
 
     } catch (error) {
-      console.error(`路由处理错误 ${route.path}:`, error)
+      logger.error('SERVER', `路由处理错误 ${route.path}: ${error.message}`)
       if (!res.headersSent) {
         res.status(500).json({
           error: 'Internal Server Error',
@@ -142,7 +143,7 @@ export function processTemplate(template, req) {
     // 简化处理：只处理基本的类型转换，模板替换结果保持为字符串
     return tryParseValue(result)
   } catch (error) {
-    console.error('模板处理错误:', error)
+    logger.error('SERVER', `模板处理错误: ${error.message}`)
     return template // 如果模板处理失败，返回原始字符串
   }
 }
@@ -179,3 +180,21 @@ export function tryParseValue(value) {
   return value
 }
 
+
+export function getNetworkUrls(port, basePath) {
+  const urls = []
+  try {
+    const networkInterfaces = require('os').networkInterfaces()
+    
+    Object.values(networkInterfaces).forEach(interfaces => {
+      interfaces.forEach(details => {
+        if (details.family === 'IPv4' && !details.internal) {
+          urls.push(`http://${details.address}:${port}${basePath}`)
+        }
+      })
+    })
+  } catch (e) {
+    // 忽略错误
+  }
+  return urls
+}

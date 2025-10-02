@@ -2,6 +2,7 @@ import merge from 'lodash.merge'
 import { mockConfigSchema } from '../schema.js'
 import omit from 'lodash.omit'
 import { match } from 'path-to-regexp'
+import { logger } from './logger.js'
 
 export function validateConfig(config) {
   const { required } = mockConfigSchema
@@ -180,7 +181,7 @@ export function matchPattern(path, pattern) {
     return result !== false
   } catch (error) {
     // 如果 path-to-regexp 解析失败，回退到简单的字符串匹配
-    console.warn(`Pattern parsing failed for "${pattern}": ${error.message}. Falling back to exact match.`)
+    logger.warn('SERVER', `Pattern parsing failed for "${pattern}": ${error.message}. Falling back to exact match.`)
     return path === pattern
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@mockfly/sqlite-plugin",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "SQLite plugin for Mockfly - enables SQLite database file support",
   "main": "index.js",
   "type": "module",

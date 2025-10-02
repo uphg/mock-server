@@ -1,6 +1,7 @@
 import { parse as parsePathToRegexp } from 'path-to-regexp'
 import Handlebars from 'handlebars'
 import { heading, paragraph, text,  tableRow, tableCell, code } from 'mdast-builder'
+import { logger } from './logger.js'
 
 /**
  * 生成文件名
@@ -31,7 +32,7 @@ function extractParamsFromTemplate(obj, params, prefix = '') {
       extractParamsFromAST(ast, params)
     } catch (error) {
       // 如果 Handlebars 解析失败，回退到原来的正则表达式方法
-      console.warn(`模板解析失败，使用备用方法: ${obj.substring(0, 50)}...`, error.message)
+      logger.warn('DOCS', `模板解析失败，使用备用方法: ${obj.substring(0, 50)}... ${error.message}`)
       extractParamsFromTemplateRegex(obj, params)
     }
   } else if (Array.isArray(obj)) {
@@ -421,7 +422,7 @@ export function extractParams(route) {
     extractParamsFromTokens(tokens, params)
   } catch (error) {
     // 如果 path-to-regexp 解析失败，回退到原来的正则表达式方法
-    console.warn(`路径解析失败，使用备用方法: ${route.path}`, error.message)
+    logger.warn('DOCS', `路径解析失败，使用备用方法: ${route.path} ${error.message}`)
     extractParamsWithRegex(route.path, params)
   }
 

@@ -1,4 +1,5 @@
 import { createHandler } from './utils/route.js'
+import { logger } from './utils/logger.js'
 
 export class RouteGenerator {
   constructor(app) {
@@ -36,10 +37,7 @@ export class RouteGenerator {
     this.app[method](fullPath, handler)
     this.activeRoutes.set(key, { method, path: fullPath, handler })
 
-    console.log(`✓ 注册路由: ${route.method || 'GET'} ${fullPath}`)
-    if (route.description) {
-      console.log(`  描述: ${route.description}`)
-    }
+    logger.info('ROUTER', `注册路由: ${route.method || 'GET'} ${fullPath} (${route.description || '无描述'})`)
   }
 
   clearRoutes() {
@@ -54,10 +52,9 @@ export class RouteGenerator {
   }
 
   printRoutes() {
-    console.log('\n=== 激活的路由 ===')
+    logger.info('ROUTER', '激活路由列表:')
     this.activeRoutes.forEach((route, _key) => {
-      console.log(`${route.method.toUpperCase()} ${route.path}`)
+      logger.info('ROUTER', `  ${route.method.toUpperCase()} ${route.path}`)
     })
-    console.log('==================\n')
   }
 }

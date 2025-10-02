@@ -11,7 +11,7 @@ describe('MockServer Integration Tests', () => {
   beforeEach(async () => {
     mockServer = new MockServer()
     const configPath = path.join(process.cwd(), 'tests/fixtures/test-config.json')
-    await mockServer.start(configPath)
+    await mockServer.start(configPath, { log: true })
     app = mockServer.app
   })
 
@@ -139,6 +139,11 @@ describe('MockServer Integration Tests', () => {
   })
 
   test('应该记录请求日志', async () => {
+    // 先发送一个请求以确保日志系统初始化
+    await request(app)
+      .get('/api/test-users')
+      .expect(200)
+
     // 捕获console.log输出
     const originalLog = console.log
     const logs = []
@@ -146,6 +151,7 @@ describe('MockServer Integration Tests', () => {
       logs.push(args.join(' '))
     }
 
+    // 发送另一个请求
     await request(app)
       .get('/api/test-users')
       .expect(200)

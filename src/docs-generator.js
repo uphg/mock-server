@@ -4,6 +4,7 @@ import { toMarkdown } from 'mdast-util-to-markdown'
 import { gfmTableToMarkdown } from 'mdast-util-gfm-table'
 import { root, heading, paragraph, text, list, listItem } from 'mdast-builder'
 import { buildBasicInfo, buildErrorResponse, buildRequestExample, buildRequestParams, buildResponseExample, flattenArray, generateFileName, isRouteMatchedForDocs } from './utils/docs.js'
+import { logger } from './utils/logger.js'
 
 const defaultDocsDir = './docs/api'
 
@@ -29,8 +30,8 @@ export class DocsGenerator {
   }
 
   /**
-   * 生成所有路由的文档
-   */
+    * 生成所有路由的文档
+    */
   async generateAllDocs() {
     try {
       // 确保文档目录存在
@@ -46,11 +47,10 @@ export class DocsGenerator {
       // 生成总览文档
       await this.generateIndexDoc()
 
-      console.log(`✅ 文档生成完成，共生成 ${this.config.routes.length + 1} 个文件`)
-      console.log(`📁 文档目录: ${path.resolve(this.docsDir)}`)
+      logger.success('DOCS', `文档生成完成: 生成${this.config.routes.length + 1}个文件 (目录: ${path.relative(process.cwd(), this.docsDir)})`)
 
     } catch (error) {
-      console.error('❌ 文档生成失败:', error.message)
+      logger.error('DOCS', `文档生成失败: ${error.message}`)
       throw error
     }
   }
@@ -63,7 +63,7 @@ export class DocsGenerator {
       await fs.access(this.docsDir)
     } catch {
       await fs.mkdir(this.docsDir, { recursive: true })
-      console.log(`📁 创建文档目录: ${this.docsDir}`)
+      logger.info('DOCS', `创建文档目录: ${this.docsDir}`)
     }
   }
 
@@ -80,7 +80,7 @@ export class DocsGenerator {
     try {
       const existingContent = await fs.readFile(filePath, 'utf-8')
       if (existingContent === newContent) {
-        console.log(`📄 跳过未变更文档: ${fileName}`)
+        logger.info('DOCS', `跳过未变更文档: ${fileName}`)
         return
       }
     } catch {
@@ -88,7 +88,7 @@ export class DocsGenerator {
     }
 
     await fs.writeFile(filePath, newContent, 'utf-8')
-    console.log(`📄 生成文档: ${fileName}`)
+    logger.info('DOCS', `生成文档: ${fileName}`)
   }
 
   generateMarkdownContent(route) {
@@ -247,7 +247,7 @@ export class DocsGenerator {
     })
 
     await fs.writeFile(filePath, markdown, 'utf-8')
-    console.log('📄 生成总览文档: README.md')
+    logger.info('DOCS', '生成总览文档: README.md')
   }
 
   /**

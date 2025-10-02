@@ -9,6 +9,8 @@ program
   .name('mockfly')
   .description('CLI tool for mockfly with auto-generated documentation')
   .version('1.0.0')
+  .option('-l, --log', 'Enable detailed logging output')
+  .option('-h, --help', 'Show help information')
 
 program
   .command('init')
@@ -23,7 +25,7 @@ program
   .option('-p, --port <port>', 'Server port')
   .option('--dev', 'Development mode with hot reload')
   .option('--verbose', 'Show detailed server information')
-  .action(startCommand)
+  .action((options) => startCommand(options, program.opts()))
 
 program
   .command('docs')
