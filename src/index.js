@@ -109,7 +109,7 @@ class MockServer {
       const config = await this.configLoader.loadConfig()
 
       // 加载插件
-      // await this.loadPlugins(config)
+      await this.loadPlugins(config)
 
       // 设置Express中间件
       this.setupMiddleware(config)
@@ -157,6 +157,10 @@ class MockServer {
         const startupTime = Date.now() - startTime
 
         if (!options.log) {
+          // 清空终端并置顶输出
+          console.clear();
+          console.log('\x1b[H'); // 将光标移到屏幕顶部
+
           // Minimal output by default
           console.log(`  ${pc.bold('Mockfly')} ${pc.cyan(`v${version}`)}  ` + pc.gray(`ready in ${pc.bold(startupTime)} ms`))
           

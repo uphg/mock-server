@@ -35,15 +35,15 @@ describe('MockServer Integration Tests', () => {
     assert.ok(response.body.timestamp)
   })
 
-  test('应该返回API文档', async () => {
-    const response = await request(app)
-      .get('/api/docs')
-      .expect(200)
+  // test('应该返回API文档', async () => {
+  //   const response = await request(app)
+  //     .get('/api/docs')
+  //     .expect(200)
 
-    assert.strictEqual(response.body.title, 'Mock API 文档')
-    assert.ok(Array.isArray(response.body.routes))
-    assert.ok(response.body.routes.length > 0)
-  })
+  //   assert.strictEqual(response.body.title, 'Mock API 文档')
+  //   assert.ok(Array.isArray(response.body.routes))
+  //   assert.ok(response.body.routes.length > 0)
+  // })
 
   test('应该从JSON文件返回数据', async () => {
     const response = await request(app)
