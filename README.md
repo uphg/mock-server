@@ -7,13 +7,14 @@ English | [中文](README.zh-CN.md)
 ## ✨ Features
 
 - 📝 **Configuration-driven** - Define API routes via JSON configuration files
-- 🔄 **Hot Reloading** - Automatically reloads routes when configuration files change
+- 🔄 **Hot Reloading** - Automatically reloads routes when configuration files change (development mode only)
 - 📚 **Auto Documentation Generation** - Automatically generates Markdown API documentation from configurations
 - 🎯 **Route Default Configurations** - Supports defining common configurations for multiple routes
 - 🌐 **CORS Support** - Configurable Cross-Origin Resource Sharing
 - ⏱️ **Response Delay** - Simulate real network latency
 - 📊 **Health Check** - Built-in health check endpoint
 - 🔧 **Template Variables** - Support for dynamic response content
+- 🖥️ **Clean Terminal Output** - Clears terminal and displays server info at top on startup
 - 🧪 **Test-friendly** - Complete test suite
 
 ## 🚀 Quick Start
@@ -30,6 +31,12 @@ npm install -g mockfly
 # 启动 mock 服务
 mockfly start
 
+# 启动服务并指定端口
+mockfly start --port 3001
+
+# 启动服务并指定主机（暴露到网络）
+mockfly start --host 0.0.0.0
+
 # 开发模式（热重载）
 mockfly dev
 
@@ -42,6 +49,18 @@ mockfly docs --dev
 # 初始化项目（如果需要保留）
 mockfly init
 ```
+
+#### CLI Options
+
+| Option | Description |
+|--------|-------------|
+| `-c, --config <file>` | Specify configuration file (default: ./mock/mock.config.json) |
+| `-p, --port <port>` | Server port (default: 3000) |
+| `--host <host>` | Server host (default: localhost) |
+| `--dev` | Development mode with hot reload |
+| `--verbose` | Show detailed server information |
+| `-l, --log` | Enable detailed logging output |
+| `-h, --help` | Show help information |
 
 ### Traditional Approach
 
@@ -130,6 +149,7 @@ Create a `mock.config.json` file:
 | `delay` | number | 0 | Global response delay (milliseconds) |
 | `cors` | boolean | true | Whether to enable CORS |
 | `mockDir` | string | ./mock/data | Mock data file directory |
+| `plugins` | array | - | List of plugins to load |
 
 ## 🛣️ Route Configuration
 
@@ -197,7 +217,34 @@ Template variables are supported in responses:
 - `{{params.id}}` - Path parameters
 - `{{query.name}}` - Query parameters
 - `{{body.email}}` - Request body parameters
-- `{{responseTime}}` - Response time
+- `{{headers.authorization}}` - Request headers
+- `{{method}}` - HTTP method
+- `{{url}}` - Full request URL
+- `{{path}}` - Request path
+
+## 🔌 Plugin System
+
+The project supports a plugin system for extending functionality. Plugins are only loaded when explicitly configured in `config.plugins`.
+
+### Built-in Plugins
+
+- **SQLite Plugin**: Enables database query responses
+- **CSV Plugin**: Enables CSV file data responses
+
+### Configuration Example
+
+```json
+{
+  "plugins": [
+    "../plugins/sqlite-plugin/index.js",
+    "../plugins/csv-plugin/index.js"
+  ]
+}
+```
+
+### Using Plugins
+
+Plugins can provide additional response types and data sources. Refer to individual plugin documentation for usage details.
 
 ## 🎯 Route Default Configurations
 

@@ -7,13 +7,14 @@
 ## ✨ 特性
 
 - 📝 **配置驱动** - 通过 JSON 配置文件定义 API 路由
-- 🔄 **热更新** - 配置文件变更时自动重新加载路由
+- 🔄 **热更新** - 配置文件变更时自动重新加载路由（仅开发模式）
 - 📚 **自动文档生成** - 根据配置自动生成 Markdown API 文档
 - 🎯 **路由默认配置** - 支持为多个路由定义通用配置
 - 🌐 **CORS 支持** - 可配置的跨域资源共享
 - ⏱️ **响应延迟** - 模拟真实网络延迟
 - 📊 **健康检查** - 内置健康检查端点
 - 🔧 **模板变量** - 支持动态响应内容
+- 🖥️ **清空终端输出** - 启动时清空终端并置顶显示服务器信息
 - 🧪 **测试友好** - 完整的测试套件
 
 ## 🚀 快速开始
@@ -30,6 +31,12 @@ npm install -g mockfly
 # 启动 mock 服务
 mockfly start
 
+# 启动服务并指定端口
+mockfly start --port 3001
+
+# 启动服务并指定主机（暴露到网络）
+mockfly start --host 0.0.0.0
+
 # 开发模式（热重载）
 mockfly dev
 
@@ -42,6 +49,18 @@ mockfly docs --dev
 # 初始化项目（如果需要保留）
 mockfly init
 ```
+
+#### CLI 选项
+
+| 选项 | 描述 |
+|------|------|
+| `-c, --config <file>` | 指定配置文件（默认：./mock/mock.config.json） |
+| `-p, --port <port>` | 服务器端口（默认：3000） |
+| `--host <host>` | 服务器主机（默认：localhost） |
+| `--dev` | 开发模式，支持热重载 |
+| `--verbose` | 显示详细服务器信息 |
+| `-l, --log` | 启用详细日志输出 |
+| `-h, --help` | 显示帮助信息 |
 
 ### 传统方式
 
@@ -130,6 +149,7 @@ pnpm start custom.config.json
 | `delay` | number | 0 | 全局响应延迟（毫秒） |
 | `cors` | boolean | true | 是否启用 CORS |
 | `mockDir` | string | ./mock/data | Mock 数据文件目录 |
+| `plugins` | array | - | 要加载的插件列表 |
 
 ## 🛣️ 路由配置
 
@@ -197,7 +217,34 @@ pnpm start custom.config.json
 - `{{params.id}}` - 路径参数
 - `{{query.name}}` - 查询参数
 - `{{body.email}}` - 请求体参数
-- `{{responseTime}}` - 响应时间
+- `{{headers.authorization}}` - 请求头
+- `{{method}}` - HTTP 方法
+- `{{url}}` - 完整请求 URL
+- `{{path}}` - 请求路径
+
+## 🔌 插件系统
+
+项目支持插件系统以扩展功能。插件仅在 `config.plugins` 中显式配置时才加载。
+
+### 内置插件
+
+- **SQLite 插件**：启用数据库查询响应
+- **CSV 插件**：启用 CSV 文件数据响应
+
+### 配置示例
+
+```json
+{
+  "plugins": [
+    "../plugins/sqlite-plugin/index.js",
+    "../plugins/csv-plugin/index.js"
+  ]
+}
+```
+
+### 使用插件
+
+插件可以提供额外的响应类型和数据源。请参考各插件文档了解使用详情。
 
 ## 🎯 路由默认配置
 
