@@ -286,7 +286,7 @@ function generateExampleValue(fieldName) {
  * 构建响应示例
  */
 export function buildResponseExample(route) {
-  if (!route.response) {
+  if (!route.response && route.responseType !== 'blob') {
     return []
   }
 
@@ -339,6 +339,7 @@ function generateResponseExample(response, route = {}) {
 function generateExampleValueForTemplate(variable) {
   if (variable.includes('params.id')) return '123'
   if (variable.includes('query.q')) return '搜索关键词'
+  if (variable.includes('query.name')) return '搜索关键词'
   if (variable.includes('body.name')) return '张三'
   if (variable.includes('body.email')) return 'zhangsan@example.com'
   if (variable.includes('body.id')) return '456'
@@ -551,10 +552,10 @@ export function buildRequestParams(route, method) {
 
 
 /**
-* 扁平化数组，过滤掉空值
-*/
+ * 扁平化数组，过滤掉空值
+ */
 export function flattenArray(arr) {
   if (!arr) return []
   if (!Array.isArray(arr)) return [arr]
-  return arr.filter(Boolean)
+  return arr.flat().filter(Boolean)
 }

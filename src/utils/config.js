@@ -43,17 +43,15 @@ function validateRoute(route) {
  * 优先级：路由显式配置 > 路由默认配置（defaults） > 全局默认配置
  */
 export function applyRouteDefaults(config) {
-  if (!config.routeDefaults || !Array.isArray(config.routeDefaults)) {
-    return
-  }
-
   // 为每个路由应用匹配的默认配置
   for (const route of config.routes) {
     // 获取全局默认配置（除了 routes 和 routeDefaults）
     const globalDefaults = extractGlobalDefaults(config)
 
     // 获取匹配的路由默认配置
-    const matchingDefaults = getMatchingRouteDefaults(route, config.routeDefaults)
+    const matchingDefaults = config.routeDefaults && Array.isArray(config.routeDefaults)
+      ? getMatchingRouteDefaults(route, config.routeDefaults)
+      : []
 
     // 按优先级合并配置：全局默认 < 路由默认 < 路由显式配置
     let mergedConfig = merge({}, globalDefaults)

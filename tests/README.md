@@ -9,18 +9,31 @@ tests/
 ├── fixtures/                 # 测试数据和配置
 │   ├── test-config.json      # 测试用配置文件
 │   └── data/                 # 测试用数据文件
-│       └── test-users.json   # 测试用户数据
+│       ├── create-test-db.js # 测试数据库创建脚本
+│       ├── test-users.csv    # 测试用户CSV数据
+│       └── test-users.json   # 测试用户JSON数据
+├── cli-commands.test.js      # CLI命令测试
+├── cli.test.js               # CLI功能测试
+├── config.test.js            # 配置测试
 ├── configLoader.test.js      # 配置加载器单元测试
-├── routeGenerator.test.js    # 路由生成器单元测试
+├── docs-generator.test.js    # 文档生成器测试
+├── docs.test.js              # 文档测试
+├── e2e.test.js               # 端到端测试
+├── generate-docs.test.js     # 生成文档测试
+├── index.test.js             # 主入口测试
+├── logger.test.js            # 日志器测试
 ├── mockServer.test.js        # Mock服务器集成测试
-├── schema.test.js            # 配置结构验证测试
 ├── performance.test.js       # 性能测试
-├── e2e.test.js              # 端到端测试
-├── testRunner.js            # 测试运行器
-├── test.config.js           # 测试配置
-├── setup.js                 # 测试环境设置
-├── teardown.js              # 测试环境清理
-└── README.md                # 本文件
+├── plugin.test.js            # 插件测试
+├── plugins.test.js           # 插件管理测试
+├── route.test.js             # 路由测试
+├── routeGenerator.test.js    # 路由生成器单元测试
+├── schema.test.js            # 配置结构验证测试
+├── setup.js                  # 测试环境设置
+├── teardown.js               # 测试环境清理
+├── test.config.js            # 测试配置
+├── testRunner.js             # 测试运行器
+└── type.test.js              # 类型验证测试
 ```
 
 ## 运行测试
@@ -52,18 +65,36 @@ node tests/testRunner.js
 
 ```bash
 # 运行单元测试
-node --test tests/config-loader.test.js
-node --test tests/route-generator.test.js
+node --test tests/configLoader.test.js
+node --test tests/routeGenerator.test.js
 node --test tests/schema.test.js
+node --test tests/cli.test.js
+node --test tests/config.test.js
+node --test tests/docs.test.js
+node --test tests/logger.test.js
+node --test tests/plugin.test.js
+node --test tests/route.test.js
+node --test tests/type.test.js
 
 # 运行集成测试
 node --test tests/mockServer.test.js
+node --test tests/plugins.test.js
 
 # 运行性能测试
 node --test tests/performance.test.js
 
 # 运行端到端测试
 node --test tests/e2e.test.js
+
+# 运行CLI相关测试
+node --test tests/cli-commands.test.js
+
+# 运行文档生成测试
+node --test tests/docs-generator.test.js
+node --test tests/generate-docs.test.js
+
+# 运行主入口测试
+node --test tests/index.test.js
 ```
 
 ### 监视模式
@@ -98,6 +129,41 @@ node --test --watch tests/**/*.test.js
 - 数据类型验证
 - 约束条件检查
 
+#### CLI 测试 (`cli.test.js`)
+- CLI功能验证
+- 命令行参数处理
+- 帮助信息显示
+
+#### Config 测试 (`config.test.js`)
+- 配置管理
+- 默认值处理
+- 配置合并
+
+#### Docs 测试 (`docs.test.js`)
+- 文档生成逻辑
+- 模板处理
+- 文档格式验证
+
+#### Logger 测试 (`logger.test.js`)
+- 日志记录功能
+- 日志级别控制
+- 输出格式
+
+#### Plugin 测试 (`plugin.test.js`)
+- 插件加载
+- 插件接口验证
+- 插件执行
+
+#### Route 测试 (`route.test.js`)
+- 路由匹配
+- 参数提取
+- 响应处理
+
+#### Type 测试 (`type.test.js`)
+- 类型验证
+- 数据转换
+- 类型检查
+
 ### 2. 集成测试
 
 #### MockServer 测试 (`mockServer.test.js`)
@@ -108,6 +174,26 @@ node --test --watch tests/**/*.test.js
 - CORS支持
 - 健康检查
 - API文档生成
+
+#### Plugins 测试 (`plugins.test.js`)
+- 插件管理器功能
+- 插件注册和执行
+- 插件配置处理
+
+#### Docs Generator 测试 (`docs-generator.test.js`)
+- 文档生成器集成
+- 配置到文档转换
+- 文档输出验证
+
+#### Generate Docs 测试 (`generate-docs.test.js`)
+- 文档生成流程
+- 文件输出
+- 错误处理
+
+#### Index 测试 (`index.test.js`)
+- 主入口功能
+- 模块集成
+- 启动流程
 
 ### 3. 性能测试
 
@@ -162,7 +248,9 @@ node --test --watch tests/**/*.test.js
 
 ### 测试配置文件
 - `tests/fixtures/test-config.json`: 基础测试配置
-- `tests/fixtures/data/test-users.json`: 测试用户数据
+- `tests/fixtures/data/test-users.json`: 测试用户JSON数据
+- `tests/fixtures/data/test-users.csv`: 测试用户CSV数据
+- `tests/fixtures/data/create-test-db.js`: 测试数据库创建脚本
 
 ### 临时文件
 测试过程中会创建临时文件，测试结束后自动清理：

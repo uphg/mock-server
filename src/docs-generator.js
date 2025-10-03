@@ -170,9 +170,9 @@ export class DocsGenerator {
   collectHeaders(route) {
     const headers = {}
 
-    // 路由级别的头
-    if (route.headers) {
-      Object.assign(headers, route.headers)
+    // 全局头（优先级最低）
+    if (this.config.headers) {
+      Object.assign(headers, this.config.headers)
     }
 
     // 从路由默认配置中收集头
@@ -184,9 +184,9 @@ export class DocsGenerator {
       }
     }
 
-    // 全局头
-    if (this.config.headers) {
-      Object.assign(headers, this.config.headers)
+    // 路由级别的头（优先级最高）
+    if (route.headers) {
+      Object.assign(headers, route.headers)
     }
 
     return headers
