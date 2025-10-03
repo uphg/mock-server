@@ -159,8 +159,12 @@ class MockServer {
         if (!options.log) {
           // Minimal output by default
           console.log(`  ${pc.bold('Mockfly')} ${pc.cyan(`v${version}`)}  ` + pc.gray(`ready in ${pc.bold(startupTime)} ms`))
+          
           // 本地访问地址
-          const localUrl = `http://localhost:${port}${baseUrl}`
+          let localUrl = `http://localhost:${port}`
+          if (baseUrl && baseUrl !== '/' && !baseUrl.startsWith('http')) {
+            localUrl += baseUrl.startsWith('/') ? baseUrl : `/${baseUrl}`
+          }
           console.log(`  ${pc.green('➜')}  ${pc.bold('Local')}:   ${colorUrl(localUrl)}`)
 
           // 网络访问地址（获取本机IP）
