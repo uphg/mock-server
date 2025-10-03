@@ -1,4 +1,5 @@
 import pc from 'picocolors'
+import readline from 'node:readline'
 
 export const LOG_LEVELS = {
   DEBUG: 0,
@@ -71,6 +72,14 @@ class Logger {
 
   success(category, message) {
     this.log(LOG_LEVELS.SUCCESS, category, message)
+  }
+
+  clearScreen() {
+    const repeatCount = process.stdout.rows - 2
+    const blank = repeatCount > 0 ? '\n'.repeat(repeatCount) : ''
+    console.log(blank)
+    readline.cursorTo(process.stdout, 0, 0)
+    readline.clearScreenDown(process.stdout)
   }
 }
 

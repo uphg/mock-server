@@ -31,6 +31,10 @@ export async function startCommand(options, globalOptions = {}) {
     args.push('--port', options.port)
   }
 
+  if (options.host) {
+    args.push('--host', options.host)
+  }
+
   if (options.verbose) {
     args.push('--verbose')
   }

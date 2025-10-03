@@ -122,7 +122,7 @@ class MockServer {
 
       // 启动服务器
       let port = config.port || 3000
-      const host = config.host || 'localhost'
+      const host = options.host || config.host || 'localhost'
 
       // 检查端口是否可用，如果不可用则查找下一个可用端口
       if (!(await this.isPortAvailable(port))) {
@@ -158,8 +158,8 @@ class MockServer {
 
         if (!options.log) {
           // 清空终端并置顶输出
-          console.clear();
-          console.log('\x1b[H'); // 将光标移到屏幕顶部
+          logger.clearScreen()
+          console.log('')
 
           // Minimal output by default
           console.log(`  ${pc.bold('Mockfly')} ${pc.cyan(`v${version}`)}  ` + pc.gray(`ready in ${pc.bold(startupTime)} ms`))
@@ -177,6 +177,8 @@ class MockServer {
             networkUrls.forEach(url => {
               console.log(`  ${pc.green('➜')}  ${pc.bold('Network')}: ${colorUrl(url)}`)
             })
+          } else if (host !== 'localhost') {
+            console.log(`  ${pc.green('➜')}  ${pc.bold('Network')}: exposed to all interfaces`)
           } else {
             console.log(
               pc.dim(`  ${pc.green('➜')}  ${pc.bold('Network')}: use `) +
@@ -299,11 +301,16 @@ class MockServer {
 
 // 命令行启动
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const configPath = process.argv[2] || './mock/mock.config.json'
+  let configPath = './mock/mock.config.json'
+  if (process.argv[2] && !process.argv[2].startsWith('--')) {
+    configPath = process.argv[2]
+  }
   const verbose = process.argv.includes('--verbose')
   const log = process.argv.includes('--log')
+  const hostIndex = process.argv.indexOf('--host')
+  const host = hostIndex !== -1 && hostIndex + 1 < process.argv.length ? process.argv[hostIndex + 1] : undefined
   const server = new MockServer()
-  server.start(configPath, { verbose, log })
+  server.start(configPath, { verbose, log, host })
 }
 
 

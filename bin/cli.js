@@ -10,7 +10,6 @@ program
   .description('CLI tool for mockfly with auto-generated documentation')
   .version('1.0.0')
   .option('-l, --log', 'Enable detailed logging output')
-  .option('-h, --help', 'Show help information')
 
 program
   .command('init')
@@ -23,6 +22,7 @@ program
   .description('Start the mock server')
   .option('-c, --config <config>', 'Configuration file path', './mock/mock.config.json')
   .option('-p, --port <port>', 'Server port')
+  .option('--host <host>', 'Server host (default: localhost)')
   .option('--dev', 'Development mode with hot reload')
   .option('--verbose', 'Show detailed server information')
   .action((options) => startCommand(options, program.opts()))
