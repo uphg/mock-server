@@ -62,31 +62,13 @@ class MockServer {
   }
 
   async loadPlugins(config) {
-    // 自动加载内置插件（如果存在）
-    try {
-      // 尝试加载SQLite插件
-      const { default: sqlitePlugin } = await import('../plugins/sqlite-plugin/index.js')
-      pluginManager.register(sqlitePlugin)
-    } catch (error) {
-      // SQLite插件不可用，跳过
-      logger.info('PLUGIN', 'SQLite plugin not available')
-    }
-
-    try {
-      // 尝试加载CSV插件
-      const { default: csvPlugin } = await import('../plugins/csv-plugin/index.js')
-      pluginManager.register(csvPlugin)
-    } catch (error) {
-      // CSV插件不可用，跳过
-      logger.info('PLUGIN', 'CSV plugin not available')
-    }
-
-    // TODO: 支持从配置中加载外部插件
+    // 仅在 config.plugins 配置后加载插件
     if (config.plugins && Array.isArray(config.plugins)) {
       for (const pluginName of config.plugins) {
         try {
           const pluginModule = await import(pluginName)
           pluginManager.register(pluginModule.default)
+          logger.info('PLUGIN', `Loaded plugin: ${pluginName}`)
         } catch (error) {
           logger.warn('PLUGIN', `Failed to load plugin ${pluginName}: ${error.message}`)
         }
