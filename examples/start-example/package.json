@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "mock": "npx ../../bin/cli.js start",
-    "mock:docs": "npx ../../bin/cli.js docs --dev"
+    "mock": "node ../../bin/cli.js start",
+    "mock:docs": "node ../../bin/cli.js docs --dev"
   },
   "keywords": [],
   "author": "",
