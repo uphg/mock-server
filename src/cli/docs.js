@@ -1,6 +1,9 @@
 import { spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
+import { ConfigLoader } from '../config-loader.js'
+import { pluginManager } from '../plugins/plugin-manager.js'
+import docsPlugin from '../../plugins/docs-plugin/index.js'
 
 export async function docsCommand(options) {
   const configPath = path.resolve(options.config)
@@ -15,10 +18,10 @@ export async function docsCommand(options) {
 
   if (options.dev) {
     console.log('📚 Starting documentation dev server...')
-    
+
     // First generate docs
     await generateDocs(configPath, outputDir)
-    
+
     // Then start dev server
     const child = spawn('vitepress', ['dev', outputDir], {
       stdio: 'inherit',
@@ -46,9 +49,9 @@ export async function docsCommand(options) {
 
   } else if (options.build) {
     console.log('📦 Building static documentation...')
-    
+
     await generateDocs(configPath, outputDir)
-    
+
     const child = spawn('vitepress', ['build', outputDir], {
       stdio: 'inherit',
       cwd: process.cwd()
@@ -71,29 +74,23 @@ export async function docsCommand(options) {
 }
 
 async function generateDocs(configPath, outputDir) {
-  return new Promise((resolve, reject) => {
-    const child = spawn('node', [
-      path.resolve('src/generate-docs.js'),
-      configPath
-    ], {
-      stdio: 'inherit',
-      cwd: process.cwd(),
-      env: {
-        ...process.env,
-        DOCS_OUTPUT_DIR: outputDir
-      }
-    })
+  try {
+    // Register docs plugin
+    pluginManager.register(docsPlugin)
 
-    child.on('close', (code) => {
-      if (code === 0) {
-        resolve()
-      } else {
-        reject(new Error(`Documentation generation failed with code ${code}`))
-      }
-    })
+    // Load configuration
+    const configLoader = new ConfigLoader(configPath)
+    const config = await configLoader.loadConfig()
 
-    child.on('error', (error) => {
-      reject(error)
-    })
-  })
+    // Get docs plugin
+    const docsPluginInstance = pluginManager.plugins.get('docs-plugin')
+    if (!docsPluginInstance) {
+      throw new Error('Docs plugin not found. Make sure @mockfly/docs-plugin is installed.')
+    }
+
+    // Generate docs using plugin
+    await docsPluginInstance.generateDocs(config, outputDir)
+  } catch (error) {
+    throw new Error(`Documentation generation failed: ${error.message}`)
+  }
 }

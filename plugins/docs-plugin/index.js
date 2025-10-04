@@ -3,15 +3,61 @@ import path from 'path'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import { gfmTableToMarkdown } from 'mdast-util-gfm-table'
 import { root, heading, paragraph, text, list, listItem } from 'mdast-builder'
-import { buildBasicInfo, buildErrorResponse, buildRequestExample, buildRequestParams, buildResponseExample, flattenArray, generateFileName, isRouteMatchedForDocs } from './utils/docs.js'
-import { logger } from './utils/logger.js'
+import { MockPlugin } from '../../src/plugins/plugin-interface.js'
+import { logger } from '../../src/utils/logger.js'
+import {
+  buildBasicInfo,
+  buildErrorResponse,
+  buildRequestExample,
+  buildRequestParams,
+  buildResponseExample,
+  flattenArray,
+  generateFileName,
+  isRouteMatchedForDocs
+} from '../../src/utils/docs.js'
 
 const defaultDocsDir = './docs/api'
 
-export class DocsGenerator {
-  constructor(config) {
+/**
+ * Docs Plugin for Mockfly
+ * Enables documentation generation for API routes
+ */
+export class DocsPlugin extends MockPlugin {
+  constructor() {
+    super()
+    this.name = 'docs-plugin'
+    this.version = '1.0.0'
+  }
+
+  getSupportedExtensions() {
+    return [] // Docs plugin doesn't handle file extensions
+  }
+
+  async loadData(route, req) {
+    throw new Error('Docs plugin does not support data loading')
+  }
+
+  async generateDocs(config, outputDir = defaultDocsDir) {
+    const docsGenerator = new DocsGenerator(config, outputDir)
+    await docsGenerator.generateAllDocs()
+  }
+
+  getInfo() {
+    return {
+      name: this.name,
+      version: this.version,
+      description: 'Documentation generation plugin for Mockfly'
+    }
+  }
+}
+
+/**
+ * Documentation Generator Class
+ */
+class DocsGenerator {
+  constructor(config, docsDir) {
     this.config = this.validateConfig(config)
-    this.docsDir = process.env.DOCS_OUTPUT_DIR || config.docsDir || defaultDocsDir
+    this.docsDir = docsDir || process.env.DOCS_OUTPUT_DIR || defaultDocsDir
   }
 
   validateConfig(config) {
@@ -30,8 +76,8 @@ export class DocsGenerator {
   }
 
   /**
-    * 生成所有路由的文档
-    */
+   * 生成所有路由的文档
+   */
   async generateAllDocs() {
     try {
       // 确保文档目录存在
@@ -268,3 +314,6 @@ export class DocsGenerator {
     }
   }
 }
+
+export { DocsGenerator }
+export default new DocsPlugin()

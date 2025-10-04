@@ -12,8 +12,8 @@
     "dev": "node --watch src/index.js",
     "test": "node --test tests/**/*.test.js",
     "test:watch": "node --test --watch tests/**/*.test.js",
-    "docs:generate": "node src/generate-docs.js",
-    "docs:generate:watch": "node --watch src/generate-docs.js"
+    "docs:generate": "node bin/cli.js docs generate",
+    "docs:generate:watch": "node --watch bin/cli.js docs generate"
   },
   "keywords": [
     "mock",
@@ -46,6 +46,7 @@
   },
   "optionalDependencies": {
     "@mockfly/sqlite-plugin": "^1.0.0",
-    "@mockfly/csv-plugin": "^1.0.0"
+    "@mockfly/csv-plugin": "^1.0.0",
+    "@mockfly/docs-plugin": "^1.0.0"
   }
 }

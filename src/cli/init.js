@@ -199,12 +199,8 @@ export async function initCommand(options) {
 
         // 添加脚本（如果不存在）
         let scriptsAdded = false
-        if (!packageJson.scripts['mock:start']) {
-          packageJson.scripts['mock:start'] = 'mockfly dev'
-          scriptsAdded = true
-        }
-        if (!packageJson.scripts['mock:docs']) {
-          packageJson.scripts['mock:docs'] = 'mockfly docs --dev'
+        if (!packageJson.scripts['mock']) {
+          packageJson.scripts['mock'] = 'mockfly dev'
           scriptsAdded = true
         }
 

@@ -2,7 +2,7 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
 import fs from 'fs/promises'
 import path from 'path'
-import { DocsGenerator } from '../src/docs-generator.js'
+import { DocsGenerator } from '../plugins/docs-plugin/index.js'
 
 describe('DocsGenerator', () => {
   let tempDir

@@ -2,20 +2,19 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
 import fs from 'fs/promises'
 import path from 'path'
-import { generateDocs } from '../src/generate-docs.js'
+import { DocsPlugin } from '../plugins/docs-plugin/index.js'
 
-describe('generateDocs', () => {
+describe('DocsPlugin', () => {
   let tempDir
-  let originalArgv
   let originalCwd
+  let docsPlugin
 
   beforeEach(async () => {
     // 保存原始环境
-    originalArgv = process.argv
     originalCwd = process.cwd()
 
     // 创建临时目录和测试文件
-    tempDir = path.join(process.cwd(), 'temp-generate-docs-test')
+    tempDir = path.join(process.cwd(), 'temp-docs-plugin-test')
     await fs.mkdir(tempDir, { recursive: true })
 
     // 创建测试配置文件
@@ -34,11 +33,13 @@ describe('generateDocs', () => {
 
     // 切换到临时目录
     process.chdir(tempDir)
+
+    // 创建插件实例
+    docsPlugin = new DocsPlugin()
   })
 
   afterEach(async () => {
     // 恢复原始环境
-    process.argv = originalArgv
     process.chdir(originalCwd)
 
     // 清理临时目录
@@ -49,55 +50,56 @@ describe('generateDocs', () => {
     }
   })
 
-  test('应该使用默认配置文件路径', async () => {
-    // 设置命令行参数（不提供配置文件路径）
-    process.argv = ['node', 'generate-docs.js']
+  test('应该正确初始化插件', async () => {
+    assert.ok(docsPlugin instanceof DocsPlugin)
+    assert.strictEqual(docsPlugin.name, 'docs-plugin')
+    assert.strictEqual(docsPlugin.version, '1.0.0')
+  })
 
-    // 创建默认路径的配置文件
-    const defaultConfigDir = path.join(tempDir, 'mock')
-    await fs.mkdir(defaultConfigDir, { recursive: true })
-    const defaultConfigPath = path.join(defaultConfigDir, 'mock.config.json')
+  test('应该返回正确的插件信息', async () => {
+    const info = docsPlugin.getInfo()
+    assert.deepStrictEqual(info, {
+      name: 'docs-plugin',
+      version: '1.0.0',
+      description: 'Documentation generation plugin for Mockfly'
+    })
+  })
+
+  test('应该不支持文件扩展名', async () => {
+    const extensions = docsPlugin.getSupportedExtensions()
+    assert.deepStrictEqual(extensions, [])
+  })
+
+  test('应该抛出错误当尝试加载数据时', async () => {
+    await assert.rejects(
+      async () => await docsPlugin.loadData({}, {}),
+      /Docs plugin does not support data loading/
+    )
+  })
+
+  test('应该生成文档', async () => {
     const testConfig = {
       port: 3000,
       routes: [
         {
-          path: '/default-test',
+          path: '/test',
           method: 'GET',
-          response: { message: 'default test' }
+          response: { message: 'test' }
         }
       ]
     }
-    await fs.writeFile(defaultConfigPath, JSON.stringify(testConfig, null, 2))
 
-    // 注意：由于generateDocs函数会调用console.log和process.exit
-    // 在测试环境中我们需要小心处理
-    // 这里我们只测试函数的基本结构，不实际执行文件操作
+    const outputDir = path.join(tempDir, 'docs')
+    await docsPlugin.generateDocs(testConfig, outputDir)
 
-    assert.ok(typeof generateDocs === 'function')
+    // 检查文档是否生成
+    const readmePath = path.join(outputDir, 'README.md')
+    const routeDocPath = path.join(outputDir, 'get-test.md')
+
+    const readmeExists = await fs.access(readmePath).then(() => true).catch(() => false)
+    const routeDocExists = await fs.access(routeDocPath).then(() => true).catch(() => false)
+
+    assert.ok(readmeExists, 'README.md should be generated')
+    assert.ok(routeDocExists, 'Route documentation should be generated')
   })
-
-  test('应该从命令行参数读取配置文件路径', async () => {
-    // 设置命令行参数
-    const customConfigPath = './custom-config.json'
-    process.argv = ['node', 'generate-docs.js', customConfigPath]
-
-    // 创建自定义配置文件
-    const testConfig = {
-      port: 3000,
-      routes: [
-        {
-          path: '/custom-test',
-          method: 'GET',
-          response: { message: 'custom test' }
-        }
-      ]
-    }
-    await fs.writeFile(path.join(tempDir, 'custom-config.json'), JSON.stringify(testConfig, null, 2))
-
-    assert.ok(typeof generateDocs === 'function')
-  })
-
-  // 注意：由于generateDocs函数包含console.log和process.exit调用，
-  // 完整的集成测试需要在单独的进程中运行，或者使用mock来拦截这些调用
-  // 这里我们主要验证函数的存在性和基本结构
 })

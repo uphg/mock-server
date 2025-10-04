@@ -37,4 +37,15 @@ export class MockPlugin {
       description: ''
     }
   }
+
+  /**
+   * Generate documentation for routes (optional)
+   * @param {object} config - Server configuration
+   * @param {string} outputDir - Output directory for docs
+   * @returns {Promise<void>}
+   */
+  async generateDocs(config, outputDir) {
+    // Default implementation does nothing
+    throw new Error('Documentation generation not supported by this plugin')
+  }
 }

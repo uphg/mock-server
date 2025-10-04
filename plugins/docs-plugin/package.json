@@ -1,0 +1,23 @@
+{
+  "name": "@mockfly/docs-plugin",
+  "version": "1.0.0",
+  "description": "Documentation generation plugin for Mockfly",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "mockfly",
+    "plugin",
+    "documentation",
+    "markdown"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "mdast-builder": "^1.1.1",
+    "mdast-util-gfm-table": "^2.0.0",
+    "mdast-util-to-markdown": "^2.1.2"
+  },
+  "peerDependencies": {
+    "mockfly": "^1.0.0-alpha.5"
+  }
+}

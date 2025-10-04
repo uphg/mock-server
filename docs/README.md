@@ -4,20 +4,18 @@
 
 ## 服务器信息
 
-- **端口**: 3001
-- **基础路径**: /api
+- **端口**: 3000
+- **基础路径**: /
 - **CORS**: 启用
 - **全局延迟**: 0ms
 
 ## 接口列表
 
-- **GET /api/users** - 获取用户列表 ([详细文档](get-users.md))
-- **GET /api/users/:id** - 获取用户详情 ([详细文档](get-users-id.md))
-- **POST /api/users** - 创建新用户 ([详细文档](post-users.md))
-- **GET /api/products** - 获取产品列表 ([详细文档](get-products.md))
-- **GET /api/products/:id** - 获取产品详情 ([详细文档](get-products-id.md))
-- **GET /api/search** - 搜索接口 ([详细文档](get-search.md))
-- **GET /api/error** - 错误响应示例 ([详细文档](get-error.md))
+- **GET /api/users** - 暂无描述 ([详细文档](get-api-users.md))
+- **GET /api/users/:id** - 暂无描述 ([详细文档](get-api-users-id.md))
+- **GET /api/products** - 暂无描述 ([详细文档](get-api-products.md))
+- **GET /api/products/:id** - 暂无描述 ([详细文档](get-api-products-id.md))
+- **POST /api/products** - 暂无描述 ([详细文档](post-api-products.md))
 
 ## 通用说明
 
